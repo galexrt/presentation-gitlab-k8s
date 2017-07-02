@@ -6,7 +6,8 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - port: 8000
+    - name: http-metrics
+      port: 8000
       protocol: TCP
   selector:
     app: __CI_ENVIRONMENT_SLUG__

@@ -1,18 +1,22 @@
 package main
 
 import (
+	"flag"
 	"net/http"
 	"os"
 	"time"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/gorilla/handlers"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/prometheus/common/version"
 )
 
 var ready = false
+var addr = flag.String("listen-address", ":8080", "The address to listen on for HTTP requests.")
 
 func main() {
+	flag.Parse()
 	log.Info("Starting presentation-gitlab-k8s application..")
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		hostname, _ := os.Hostname()
@@ -30,11 +34,12 @@ func main() {
 			w.Write([]byte("500"))
 		}
 	})
+	http.Handle("/metrics", promhttp.Handler())
 	go func() {
 		<-time.After(5 * time.Second)
 		ready = true
 		log.Info("Application is ready!")
 	}()
-	log.Info("Listen on :8000")
-	log.Fatal(http.ListenAndServe(":8000", handlers.LoggingHandler(os.Stdout, http.DefaultServeMux)))
+	log.Info("Listen on " + *addr)
+	log.Fatal(http.ListenAndServe(*addr, handlers.LoggingHandler(os.Stdout, http.DefaultServeMux)))
 }
