@@ -3,6 +3,8 @@ kind: Service
 metadata:
   name: presentation-gitlab-k8s-__CI_ENVIRONMENT_SLUG__
   namespace: presentation-gitlab-k8s
+  labels:
+      prometheus-scrape: "true"
 spec:
   type: ClusterIP
   ports:
