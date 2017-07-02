@@ -10,4 +10,3 @@ spec:
       protocol: TCP
   selector:
     app: __CI_ENVIRONMENT_SLUG__
-    version: __VERSION__
