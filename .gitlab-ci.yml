@@ -67,9 +67,9 @@ deploy_dev:
         - sed -i "s/__VERSION__/${CI_COMMIT_REF_NAME}/" deployment.yaml ingress.yaml service.yaml
         - kubectl cluster-info
         - kubectl get deployments -l app=${CI_ENVIRONMENT_SLUG}
-        - kubectl create -f deployment.yaml || (kubectl delete -f deployment.yaml && kubectl create -f deployment.yaml)
+        - kubectl create -f deployment.yaml || (kubectl delete -f deployment.yaml && kubectl apply -f deployment.yaml)
         - kubectl create -f service.yaml || true
-        - kubectl create -f ingress.yaml || kubectl replace -f ingress.yaml
+        - kubectl apply -f ingress.yaml
 
 deploy_live:
     image: registry.gitlab.com/gitlab-examples/kubernetes-deploy
@@ -90,6 +90,6 @@ deploy_live:
         - sed -i "s/__VERSION__/${CI_COMMIT_REF_NAME}/" deployment.yaml ingress.yaml service.yaml
         - kubectl cluster-info
         - kubectl get deployments -l app=${CI_ENVIRONMENT_SLUG}
-        - kubectl create -f deployment.yaml || kubectl replace -f deployment.yaml
+        - kubectl apply -f deployment.yaml
         - kubectl create -f service.yaml || true
-        - kubectl create -f ingress.yaml || kubectl replace -f ingress.yaml
+        - kubectl apply -f ingress.yaml
