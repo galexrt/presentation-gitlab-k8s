@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: presentation-gitlab-k8s-__CI_ENVIRONMENT_SLUG__
+  namespace: presentation-gitlab-k8s
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8000
+      protocol: TCP
+  selector:
+    app: __CI_ENVIRONMENT_SLUG__
+    version: __VERSION__

@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: __CI_ENVIRONMENT_SLUG__
+  labels:
+    app: __CI_ENVIRONMENT_SLUG__
+    track: stable
+    version: __VERSION__
+spec:
+  replicas: 10
+  template:
+    metadata:
+      labels:
+        app: __CI_ENVIRONMENT_SLUG__
+        track: stable
+        version: __VERSION__
+    spec:
+      imagePullSecrets:
+        - name: registry-zerbytes-gitlab-key
+      containers:
+      - name: app
+        image: registry.zerbytes.net/atrost/presentation-gitlab-k8s:__VERSION__
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
