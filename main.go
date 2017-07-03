@@ -21,7 +21,7 @@ func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		hostname, _ := os.Hostname()
 		w.Write([]byte("Hello World!\n"))
-		w.Write([]byte("Name: " + hostname + "\n"))
+		w.Write([]byte("Hostname: " + hostname + "\n"))
 		w.Write([]byte("Version Info:\n"))
 		w.Write([]byte(version.Print("app") + "\n"))
 	})
