@@ -23,6 +23,12 @@ test:
         - go get -u github.com/kardianos/govendor
         - /go/bin/govendor test +local
 
+test2:
+  stage: test
+  script:
+      - sleep 5
+      - echo "We did it! Something else runs in parallel!"
+
 compile:
     stage: build
     script:
@@ -34,7 +40,15 @@ compile:
         paths:
             - app
 
-# TODO Add release upload to S3 storage
+release_upload:
+    stage: release
+    image: minio/mc
+    script:
+      - echo "=> We already have artifact sotrage in GitLab! Are we sure we want this too?"
+      - mc config host add zerbytesnet https://s3.zerbytes.net ${ACCESS_KEY} ${SECRET_KEY} S3v4
+      - mc mb -p zerbytesnet/build-release-${CI_PROJECT_NAME}/
+      - mc cp app zerbytesnet/build-release-${CI_PROJECT_NAME}/
+
 
 image_build:
     stage: release
