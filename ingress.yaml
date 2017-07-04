@@ -9,10 +9,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - __CI_ENVIRONMENT_SLUG__-presentation-gitlab-k8s.zerbytes.net
-    secretName: tls-net-zerbytes-__CI_ENVIRONMENT_SLUG__-presentation-gitlab-k8s
+    - __CI_ENVIRONMENT_SLUG__-presentation-gitlab-k8s.edenmal.net
+    secretName: tls-net-edenmal-__CI_ENVIRONMENT_SLUG__-presentation-gitlab-k8s
   rules:
-  - host: __CI_ENVIRONMENT_SLUG__-presentation-gitlab-k8s.zerbytes.net
+  - host: __CI_ENVIRONMENT_SLUG__-presentation-gitlab-k8s.edenmal.net
     http:
       paths:
       - path: /

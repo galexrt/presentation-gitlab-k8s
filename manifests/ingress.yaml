@@ -9,10 +9,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - live-presentation-gitlab-k8s.zerbytes.net
-    secretName: tls-net-zerbytes-live-presentation-gitlab-k8s
+    - live-presentation-gitlab-k8s.edenmal.net
+    secretName: tls-net-edenmal-live-presentation-gitlab-k8s
   rules:
-  - host: live-presentation-gitlab-k8s.zerbytes.net
+  - host: live-presentation-gitlab-k8s.edenmal.net
     http:
       paths:
       - path: /
