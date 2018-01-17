@@ -80,6 +80,7 @@ deploy_dev:
         - kubectl config set-context default-system --cluster=default-cluster --user=default-admin --namespace ${KUBE_NAMESPACE}
         - kubectl config use-context default-system
         - kubectl cluster-info
+        - cd manifests/
         - sed -i "s/__CI_ENVIRONMENT_SLUG__/${CI_ENVIRONMENT_SLUG}/" deployment.yaml ingress.yaml service.yaml
         - sed -i "s/__VERSION__/${CI_COMMIT_REF_NAME}/" deployment.yaml ingress.yaml service.yaml
         - kubectl get deployments -l app=${CI_ENVIRONMENT_SLUG}
@@ -105,6 +106,7 @@ deploy_live:
         - kubectl config set-context default-system --cluster=default-cluster --user=default-admin --namespace ${KUBE_NAMESPACE}
         - kubectl config use-context default-system
         - kubectl cluster-info
+        - cd manifests/
         - sed -i "s/__CI_ENVIRONMENT_SLUG__/${CI_ENVIRONMENT_SLUG}/" deployment.yaml ingress.yaml service.yaml
         - sed -i "s/__VERSION__/${CI_COMMIT_REF_NAME}/" deployment.yaml ingress.yaml service.yaml
         - kubectl get deployments -l app=${CI_ENVIRONMENT_SLUG}
