@@ -18,3 +18,13 @@ You have to replace the following strings in all files:
 * `registry.edenmal.moe` with your Docker Registry address (example `registry.example.com`)
 
 Then you can just import the files/repository.
+
+## GitLab Docs References
+* GitLab Kubernetes Integration Docs: https://docs.gitlab.com/ce/user/project/integrations/kubernetes.html
+* GitLab Kubernetes Integration Docs Environment variables: https://docs.gitlab.com/ce/user/project/integrations/kubernetes.html#deployment-variables
+
+As of GitLab `10.3` the Kubernetes Integration is marked as deprecated, the following docs show the new feature
+called Clusters:
+* GitLab 10.3 release - Kubernetes integration service: https://about.gitlab.com/2017/12/22/gitlab-10-3-released/#kubernetes-integration-service
+* GitLab Clusters Feature Docs: https://docs.gitlab.com/ce/user/project/clusters/index.html
+
