@@ -5,8 +5,6 @@ metadata:
   labels:
     app: __CI_ENVIRONMENT_SLUG__
     track: stable
-  annotations:
-
 spec:
   replicas: 4
   template:
