@@ -2,4 +2,3 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: presentation-gitlab-k8s
-spec: {}

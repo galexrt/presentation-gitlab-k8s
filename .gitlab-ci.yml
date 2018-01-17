@@ -84,9 +84,7 @@ deploy_dev:
         - sed -i "s/__CI_ENVIRONMENT_SLUG__/${CI_ENVIRONMENT_SLUG}/" deployment.yaml ingress.yaml service.yaml
         - sed -i "s/__VERSION__/${CI_COMMIT_REF_NAME}/" deployment.yaml ingress.yaml service.yaml
         - kubectl get deployments -l app=${CI_ENVIRONMENT_SLUG}
-        - |
-          test $(kubectl apply -f manifests/deployment.yml -n ${NAMESPACE}) == *"unchanged"* && \
-          kubectl patch deployment ${CI_ENVIRONMENT_SLUG} -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"ci-last-updated\":\"$(date +'%s')\"}}}}}"
+        - if [[ $(kubectl apply -f deployment.yaml) == *"unchanged"* ]]; then kubectl patch deployment ${CI_ENVIRONMENT_SLUG} -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"ci-last-updated\":\"$(date +'%s')\"}}}}}"; fi
         - kubectl apply -f service.yaml || true
         - kubectl apply -f ingress.yaml
 
