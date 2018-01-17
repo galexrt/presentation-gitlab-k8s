@@ -28,3 +28,5 @@ called Clusters:
 * GitLab 10.3 release - Kubernetes integration service: https://about.gitlab.com/2017/12/22/gitlab-10-3-released/#kubernetes-integration-service
 * GitLab Clusters Feature Docs: https://docs.gitlab.com/ce/user/project/clusters/index.html
 
+## Thanks!
+Thanks to [@shadycuz - GitHub](https://github.com/shadycuz) for his comments with improvements for the code in this repository!
