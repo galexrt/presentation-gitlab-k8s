@@ -5,6 +5,8 @@ metadata:
   labels:
     app: __CI_ENVIRONMENT_SLUG__
     track: stable
+  annotations:
+
 spec:
   replicas: 4
   template:
@@ -14,10 +16,10 @@ spec:
         track: stable
     spec:
       imagePullSecrets:
-        - name: registry-zerbytes-gitlab-key
+        - name: registry-edenmal-gitlab-key
       containers:
       - name: app
-        image: registry.zerbytes.net/atrost/presentation-gitlab-k8s:__VERSION__
+        image: registry.edenmal.moe/atrost/presentation-gitlab-k8s:__VERSION__
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
