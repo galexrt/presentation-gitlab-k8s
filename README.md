@@ -15,7 +15,10 @@ All my blog posts around GitLab and Kubernetes can be found here:
 ## Using these files
 You have to replace the following strings in all files:
 * `gitlab.edenmal.moe` with your GitLab address (example `gitlab.example.com`)
-* `registry.edenmal.moe` with your Docker Registry address (example `registry.example.com`)
+* `registry.edenmal.moe`/`registry.zerbytes.net` with your Docker Registry address (example `registry.example.com`)
+
+You also need to create a Docker login secret named `regsecret` in the `presentation-gitlab-k8s` namespace used in the `manifests/` directory.
+The guide for that can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/.
 
 Then you can just import the files/repository.
 

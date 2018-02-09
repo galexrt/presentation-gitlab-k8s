@@ -1,4 +1,4 @@
-image: golang:1.8.3
+image: golang:1.9.4-stretch
 
 # The problem is that to be able to use go get, one needs to put
 # the repository in the $GOPATH. So for example if your gitlab domain
@@ -7,9 +7,9 @@ image: golang:1.8.3
 # repository in /go/src/mydomainperso.com/repos/projectname
 # Thus, making a symbolic link corrects this.
 before_script:
-    - mkdir -p /go/src/gitlab.edenmal.moe/${CI_PROJECT_NAMESPACE}
-    - ln -sf ${CI_PROJECT_DIR} /go/src/gitlab.edenmal.moe/${CI_PROJECT_PATH}
-    - cd /go/src/gitlab.edenmal.moe/${CI_PROJECT_PATH}/
+    - mkdir -p /go/src/gitlab.zerbytes.net/${CI_PROJECT_NAMESPACE}
+    - ln -sf ${CI_PROJECT_DIR} /go/src/gitlab.zerbytes.net/${CI_PROJECT_PATH}
+    - cd /go/src/gitlab.zerbytes.net/${CI_PROJECT_PATH}/
 
 stages:
     - test
@@ -37,19 +37,19 @@ compile:
         # Add here all the dependencies, or use glide/govendor/...
         # to get them automatically.
         # Better put this in a Makefile
-        - go build -race -ldflags "-X gitlab.edenmal.moe/${CI_PROJECT_PATH}/vendor/github.com/prometheus/common/version.Version=$VERSION -X gitlab.edenmal.moe/${CI_PROJECT_PATH}/vendor/github.com/prometheus/common/version.Revision=${CI_COMMIT_SHA} -X gitlab.edenmal.moe/${CI_PROJECT_PATH}/vendor/github.com/prometheus/common/version.Branch=${CI_COMMIT_REF_NAME} -X gitlab.edenmal.moe/${CI_PROJECT_PATH}/vendor/github.com/prometheus/common/version.BuildUser=$(whoami)@$(hostname) -X gitlab.edenmal.moe/${CI_PROJECT_PATH}/vendor/github.com/prometheus/common/version.BuildDate=$(date +%Y%m%d-%H:%M:%S) -extldflags '-static'" -o app
+        - go build -race -ldflags "-X gitlab.zerbytes.net/${CI_PROJECT_PATH}/vendor/github.com/prometheus/common/version.Version=$VERSION -X gitlab.zerbytes.net/${CI_PROJECT_PATH}/vendor/github.com/prometheus/common/version.Revision=${CI_COMMIT_SHA} -X gitlab.zerbytes.net/${CI_PROJECT_PATH}/vendor/github.com/prometheus/common/version.Branch=${CI_COMMIT_REF_NAME} -X gitlab.zerbytes.net/${CI_PROJECT_PATH}/vendor/github.com/prometheus/common/version.BuildUser=$(whoami)@$(hostname) -X gitlab.zerbytes.net/${CI_PROJECT_PATH}/vendor/github.com/prometheus/common/version.BuildDate=$(date +%Y%m%d-%H:%M:%S) -extldflags '-static'" -o app
     artifacts:
         paths:
             - app
 
-release_upload:
-    stage: release
-    image: minio/mc
-    script:
-      - echo "=> We already have artifact sotrage in GitLab! This is for demonstational purposes only."
-      - mc config host add edenmalmoe https://s3.edenmal.moe ${ACCESS_KEY} ${SECRET_KEY} S3v4
-      - mc mb -p edenmalmoe/build-release-${CI_PROJECT_NAME}/
-      - mc cp app edenmalmoe/build-release-${CI_PROJECT_NAME}/
+#release_upload:
+#    stage: release
+#    image: minio/mc
+#    script:
+#      - echo "=> We already have artifact sotrage in GitLab! This is for demonstational purposes only."
+#      - mc config host add edenmalmoe https://s3.edenmal.moe ${ACCESS_KEY} ${SECRET_KEY} S3v4
+#      - mc mb -p edenmalmoe/build-release-${CI_PROJECT_NAME}/
+#      - mc cp app edenmalmoe/build-release-${CI_PROJECT_NAME}/
 
 
 image_build:
@@ -61,18 +61,18 @@ image_build:
         - docker:dind
     script:
         - docker info
-        - docker login -u gitlab-ci-token -p ${CI_JOB_TOKEN} registry.edenmal.moe
-        - docker build -t registry.edenmal.moe/${CI_PROJECT_PATH}:latest .
-        - docker tag registry.edenmal.moe/${CI_PROJECT_PATH}:latest registry.edenmal.moe/${CI_PROJECT_PATH}:${CI_COMMIT_REF_NAME}
-        - test ! -z "${CI_COMMIT_TAG}" && docker push registry.edenmal.moe/${CI_PROJECT_PATH}:latest
-        - docker push registry.edenmal.moe/${CI_PROJECT_PATH}:${CI_COMMIT_REF_NAME}
+        - docker login -u gitlab-ci-token -p ${CI_JOB_TOKEN} registry.zerbytes.net
+        - docker build -t registry.zerbytes.net/${CI_PROJECT_PATH}:latest .
+        - docker tag registry.zerbytes.net/${CI_PROJECT_PATH}:latest registry.zerbytes.net/${CI_PROJECT_PATH}:${CI_COMMIT_REF_NAME}
+        - test ! -z "${CI_COMMIT_TAG}" && docker push registry.zerbytes.net/${CI_PROJECT_PATH}:latest
+        - docker push registry.zerbytes.net/${CI_PROJECT_PATH}:${CI_COMMIT_REF_NAME}
 
 deploy_dev:
     image: registry.gitlab.com/gitlab-examples/kubernetes-deploy
     stage: deploy
     environment:
-        name: dev/${CI_COMMIT_REF_NAME}
-        url: https://dev-presentation-gitlab-k8s.edenmal.moe
+        name: dev
+        url: https://dev-presentation-gitlab-k8s.edenmal.net
     script:
         - echo "${KUBE_CA_PEM}" > kube_ca.pem
         - kubectl config set-cluster default-cluster --server=${KUBE_URL} --certificate-authority="$(pwd)/kube_ca.pem"
@@ -92,8 +92,8 @@ deploy_live:
     image: registry.gitlab.com/gitlab-examples/kubernetes-deploy
     stage: deploy
     environment:
-        name: live/${CI_COMMIT_REF_NAME}
-        url: https://live-presentation-gitlab-k8s.edenmal.moe
+        name: live
+        url: https://live-presentation-gitlab-k8s.edenmal.net
     only:
         - tags
     when: manual

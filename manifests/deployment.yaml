@@ -14,10 +14,10 @@ spec:
         track: stable
     spec:
       imagePullSecrets:
-        - name: registry-edenmal-gitlab-key
+        - name: regsecret
       containers:
       - name: app
-        image: registry.edenmal.moe/atrost/presentation-gitlab-k8s:__VERSION__
+        image: registry.zerbytes.net/atrost/presentation-gitlab-k8s:__VERSION__
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
