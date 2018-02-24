@@ -3,8 +3,11 @@ kind: Service
 metadata:
   name: presentation-gitlab-k8s-__CI_ENVIRONMENT_SLUG__
   namespace: presentation-gitlab-k8s
-  labels:
-      prometheus-scrape: "true"
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8000"
+    prometheus.io/scheme: "http"
+    prometheus.io/path: "/metrics"
 spec:
   type: ClusterIP
   ports:
