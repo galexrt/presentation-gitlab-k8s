@@ -36,18 +36,19 @@ compile:
     script:
         # Add here all the dependencies, or use glide/govendor/...
         # to get them automatically.
-        # Better put this in a Makefile
+        # TODO Better put this in a Makefile soon
         - go build -race -ldflags "-X gitlab.zerbytes.net/${CI_PROJECT_PATH}/vendor/github.com/prometheus/common/version.Version=$VERSION -X gitlab.zerbytes.net/${CI_PROJECT_PATH}/vendor/github.com/prometheus/common/version.Revision=${CI_COMMIT_SHA} -X gitlab.zerbytes.net/${CI_PROJECT_PATH}/vendor/github.com/prometheus/common/version.Branch=${CI_COMMIT_REF_NAME} -X gitlab.zerbytes.net/${CI_PROJECT_PATH}/vendor/github.com/prometheus/common/version.BuildUser=$(whoami)@$(hostname) -X gitlab.zerbytes.net/${CI_PROJECT_PATH}/vendor/github.com/prometheus/common/version.BuildDate=$(date +%Y%m%d-%H:%M:%S) -extldflags '-static'" -o app
     artifacts:
         paths:
             - app
 
+# example job to upload the built release to an S3 server with mc
 #release_upload:
 #    stage: release
 #    image: minio/mc
 #    script:
 #      - echo "=> We already have artifact sotrage in GitLab! This is for demonstational purposes only."
-#      - mc config host add edenmalmoe https://s3.edenmal.moe ${ACCESS_KEY} ${SECRET_KEY} S3v4
+#      - mc config host add edenmalmoe https://s3.edenmal.net ${ACCESS_KEY} ${SECRET_KEY} S3v4
 #      - mc mb -p edenmalmoe/build-release-${CI_PROJECT_NAME}/
 #      - mc cp app edenmalmoe/build-release-${CI_PROJECT_NAME}/
 
