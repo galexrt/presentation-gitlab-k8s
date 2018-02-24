@@ -1,6 +1,8 @@
 # presentation-gitlab-k8s
 These are the example files for my presentation about GitLab + Kubernetes for Continuous Integration and Delivery.
-The files are also mainly used in my GitLab post series about the GitLab CI runners.
+These files may also be used in my other GitLab posts about GitLab CI.
+
+![Kubernetes and GitLab](/media/kubernetes-and-gitLab.png)
 
 **INFO** This isn't the best way to deploy to K8s, this is a more of an example how simple it can be.
 
