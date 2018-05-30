@@ -1,4 +1,4 @@
-image: golang:1.9.4-stretch
+image: golang:1.10.2-stretch
 
 # The problem is that to be able to use go get, one needs to put
 # the repository in the $GOPATH. So for example if your gitlab domain
@@ -7,9 +7,9 @@ image: golang:1.9.4-stretch
 # repository in /go/src/mydomainperso.com/repos/projectname
 # Thus, making a symbolic link corrects this.
 before_script:
-    - mkdir -p /go/src/gitlab.zerbytes.net/${CI_PROJECT_NAMESPACE}
-    - ln -sf ${CI_PROJECT_DIR} /go/src/gitlab.zerbytes.net/${CI_PROJECT_PATH}
-    - cd /go/src/gitlab.zerbytes.net/${CI_PROJECT_PATH}/
+    - mkdir -p "/go/src/gitlab.zerbytes.net/${CI_PROJECT_NAMESPACE}"
+    - ln -sf "${CI_PROJECT_DIR}" "/go/src/gitlab.zerbytes.net/${CI_PROJECT_PATH}"
+    - cd "/go/src/gitlab.zerbytes.net/${CI_PROJECT_PATH}/"
 
 stages:
     - test
@@ -26,7 +26,7 @@ test:
 test2:
   stage: test
   script:
-      - sleep 5
+      - sleep 3
       - echo "We did it! Something else runs in parallel!"
 
 compile:
