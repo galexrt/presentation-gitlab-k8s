@@ -6,7 +6,10 @@ metadata:
     app: __CI_ENVIRONMENT_SLUG__
     track: stable
 spec:
-  replicas: 4
+  replicas: 2
+  selector:
+    matchLabels:
+      app: __CI_ENVIRONMENT_SLUG__
   template:
     metadata:
       labels:
