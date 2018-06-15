@@ -82,21 +82,14 @@ deploy_review:
     url: https://$CI_BUILD_REF_SLUG-presentation-gitlab-k8s.edenmal.net
     on_stop: stop_review
   script:
-    - echo $KUBECONFIG
-    - cat $KUBECONFIG
-    - echo "${KUBE_CA_PEM}" > kube_ca.pem
-    - kubectl config set-cluster default-cluster --server=${KUBE_URL} --certificate-authority="$(pwd)/kube_ca.pem"
-    - kubectl config set-credentials default-admin --token=${KUBE_TOKEN}
-    - kubectl config set-context default-system --cluster=default-cluster --user=default-admin --namespace ${KUBE_NAMESPACE}
-    - kubectl config use-context default-system
-    - kubectl cluster-info
+    - kubectl version
     - cd manifests/
     - sed -i "s/__CI_ENVIRONMENT_SLUG__/${CI_ENVIRONMENT_SLUG}/" deployment.yaml ingress.yaml service.yaml
     - sed -i "s/__VERSION__/${CI_COMMIT_REF_NAME}/" deployment.yaml ingress.yaml service.yaml
-    - kubectl get deployments -l app=${CI_ENVIRONMENT_SLUG}
     - if [[ $(kubectl apply -f deployment.yaml) == *"unchanged"* ]]; then kubectl patch deployment ${CI_ENVIRONMENT_SLUG} -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"ci-last-updated\":\"$(date +'%s')\"}}}}}"; fi
     - kubectl apply -f service.yaml || true
     - kubectl apply -f ingress.yaml
+    - kubectl get all -l app=${CI_ENVIRONMENT_SLUG}
 
 stop_review:
   image: lachlanevenson/k8s-kubectl:latest
@@ -108,19 +101,12 @@ stop_review:
     name: review/$CI_BUILD_REF_NAME
     action: stop
   script:
-    - echo "${KUBE_CA_PEM}" > kube_ca.pem
-    - kubectl config set-cluster default-cluster --server=${KUBE_URL} --certificate-authority="$(pwd)/kube_ca.pem"
-    - kubectl config set-credentials default-admin --token=${KUBE_TOKEN}
-    - kubectl config set-context default-system --cluster=default-cluster --user=default-admin --namespace ${KUBE_NAMESPACE}
-    - kubectl config use-context default-system
-    - kubectl cluster-info
+    - kubectl version
     - cd manifests/
     - sed -i "s/__CI_ENVIRONMENT_SLUG__/${CI_ENVIRONMENT_SLUG}/" deployment.yaml ingress.yaml service.yaml
     - sed -i "s/__VERSION__/${CI_COMMIT_REF_NAME}/" deployment.yaml ingress.yaml service.yaml
     - kubectl get deployments -l app=${CI_ENVIRONMENT_SLUG}
-    - kubectl delete -f deployment.yaml -f service.yaml -f ingress.yaml
-    - kubectl delete -f service.yaml
-    - kubectl delete -f ingress.yaml
+    - kubectl delete -l app=${CI_ENVIRONMENT_SLUG}
 
 deploy_live:
   image: lachlanevenson/k8s-kubectl:latest
@@ -132,16 +118,11 @@ deploy_live:
     - tags
   when: manual
   script:
-    - echo "${KUBE_CA_PEM}" > kube_ca.pem
-    - kubectl config set-cluster default-cluster --server=${KUBE_URL} --certificate-authority="$(pwd)/kube_ca.pem"
-    - kubectl config set-credentials default-admin --token=${KUBE_TOKEN}
-    - kubectl config set-context default-system --cluster=default-cluster --user=default-admin --namespace ${KUBE_NAMESPACE}
-    - kubectl config use-context default-system
-    - kubectl cluster-info
+    - kubectl version
     - cd manifests/
     - sed -i "s/__CI_ENVIRONMENT_SLUG__/${CI_ENVIRONMENT_SLUG}/" deployment.yaml ingress.yaml service.yaml
     - sed -i "s/__VERSION__/${CI_COMMIT_REF_NAME}/" deployment.yaml ingress.yaml service.yaml
-    - kubectl get deployments -l app=${CI_ENVIRONMENT_SLUG}
     - kubectl apply -f deployment.yaml
     - kubectl apply -f service.yaml || true
     - kubectl apply -f ingress.yaml
+    - kubectl get all -l app=${CI_ENVIRONMENT_SLUG}
