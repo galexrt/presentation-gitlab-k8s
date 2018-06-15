@@ -28,7 +28,6 @@ This list is just an excerpt:
          * [Build Process](#build-process)
          * [Deployment Manifests](#deployment-manifests)
          * [Miscellaneous](#miscellaneous)
-      * [Usage](#usage)
       * [Thanks!](#thanks)
       * [ToDo](#todo)
 
@@ -56,6 +55,8 @@ A guide for that can be found here: [Kubernetes.io - Pull an Image from a Privat
 The Namespace manifest is in the [`gitlab-ci/`](/gitlab-ci/) directory.
 
 Then you can just import the repository into your GitLab instance and are ready to go.
+
+For information on how to use these files and setup GitLab Kubernetes cluster/integration, see the above blog post and in specific this post [GitLab + Kubernetes: Perfect Match for Continuous Delivery with Container](https://edenmal.moe/post/2017/GitLab-Kubernetes-Perfect-Match-for-Continuous-Delivery-with-Container/).
 
 ## GitLab Docs References
 * GitLab Kubernetes Integration Docs: https://docs.gitlab.com/ce/user/project/integrations/kubernetes.html
@@ -89,9 +90,6 @@ As of GitLab `10.3` the Kubernetes Integration is marked as deprecated and with 
 
 ### Miscellaneous
 * [`media/`](/media/) - Contains media for the [`README.md`](/README.md) in this repository.
-
-## Usage
-For information on how to use these files and setup GitLab Kubernetes cluster/integration, see the above blog post and in specific this post [GitLab + Kubernetes: Perfect Match for Continuous Delivery with Container](https://edenmal.moe/post/2017/GitLab-Kubernetes-Perfect-Match-for-Continuous-Delivery-with-Container/).
 
 ## Thanks!
 Thanks to [@shadycuz - GitHub](https://github.com/shadycuz) for his comments with improvements for the code in this repository!
