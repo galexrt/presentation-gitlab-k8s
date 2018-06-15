@@ -71,6 +71,7 @@ deploy_review:
   only:
     - branches
   except:
+    - master
     - tags
   environment:
     name: review/$CI_BUILD_REF_NAME
