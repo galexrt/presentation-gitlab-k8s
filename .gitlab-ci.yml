@@ -72,6 +72,11 @@ image_build:
 deploy_review:
   image: registry.gitlab.com/gitlab-examples/kubernetes-deploy
   stage: review
+  only:
+    - branches
+    - tags
+  except:
+    - master
   environment:
     name: review/$CI_BUILD_REF_NAME
     url: https://$CI_BUILD_REF_SLUG-presentation-gitlab-k8s.edenmal.net
@@ -94,6 +99,9 @@ deploy_review:
 stop_review:
   image: registry.gitlab.com/gitlab-examples/kubernetes-deploy
   stage: review
+  variables:
+    GIT_STRATEGY: none
+  when: manual
   environment:
     name: review/$CI_BUILD_REF_NAME
     action: stop
