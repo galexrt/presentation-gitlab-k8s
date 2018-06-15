@@ -54,6 +54,7 @@ As of GitLab `10.3` the Kubernetes Integration is marked as deprecated and with 
 ### Example Application
 * [`main.go`](/main.go) - The Golang example application code.
 * [`vendor/`](/vendor/) - Contains the Golang example application dependencies (`dep` is used).
+* [`Gopkg.lock`](`/Gopkg.lock`) and [`Gopkg.toml`](`/Gopkg.toml`) - Golang `dep` .
 
 ### Kubernetes Base GitLab CI Manifests
 * [`gitlab-ci/`](/gitlab-ci/)
