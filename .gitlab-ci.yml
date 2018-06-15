@@ -70,7 +70,7 @@ image_build:
     - docker push registry.zerbytes.net/${CI_PROJECT_PATH}:${CI_COMMIT_REF_NAME}
 
 deploy_review:
-  image: registry.gitlab.com/gitlab-examples/kubernetes-deploy
+  image: lachlanevenson/k8s-kubectl:latest
   stage: review
   only:
     - branches
@@ -82,6 +82,8 @@ deploy_review:
     url: https://$CI_BUILD_REF_SLUG-presentation-gitlab-k8s.edenmal.net
     on_stop: stop_review
   script:
+    - echo $KUBECONFIG
+    - cat $KUBECONFIG
     - echo "${KUBE_CA_PEM}" > kube_ca.pem
     - kubectl config set-cluster default-cluster --server=${KUBE_URL} --certificate-authority="$(pwd)/kube_ca.pem"
     - kubectl config set-credentials default-admin --token=${KUBE_TOKEN}
@@ -97,7 +99,7 @@ deploy_review:
     - kubectl apply -f ingress.yaml
 
 stop_review:
-  image: registry.gitlab.com/gitlab-examples/kubernetes-deploy
+  image: lachlanevenson/k8s-kubectl:latest
   stage: review
   variables:
     GIT_STRATEGY: none
@@ -121,7 +123,7 @@ stop_review:
     - kubectl delete -f ingress.yaml
 
 deploy_live:
-  image: registry.gitlab.com/gitlab-examples/kubernetes-deploy
+  image: lachlanevenson/k8s-kubectl:latest
   stage: deploy
   environment:
     name: live
