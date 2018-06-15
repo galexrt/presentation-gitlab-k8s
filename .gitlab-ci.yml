@@ -7,108 +7,131 @@ image: golang:1.10.2-stretch
 # repository in /go/src/mydomainperso.com/repos/projectname
 # Thus, making a symbolic link corrects this.
 before_script:
-    - mkdir -p "/go/src/gitlab.zerbytes.net/${CI_PROJECT_NAMESPACE}"
-    - ln -sf "${CI_PROJECT_DIR}" "/go/src/gitlab.zerbytes.net/${CI_PROJECT_PATH}"
-    - cd "/go/src/gitlab.zerbytes.net/${CI_PROJECT_PATH}/"
+  - mkdir -p "/go/src/gitlab.zerbytes.net/${CI_PROJECT_NAMESPACE}"
+  - ln -sf "${CI_PROJECT_DIR}" "/go/src/gitlab.zerbytes.net/${CI_PROJECT_PATH}"
+  - cd "/go/src/gitlab.zerbytes.net/${CI_PROJECT_PATH}/"
 
 stages:
-    - test
-    - build
-    - release
-    - deploy
+  - test
+  - build
+  - release
+  - review
+  - deploy
 
 test:
-    stage: test
-    script:
-        - go get -u github.com/kardianos/govendor
-        - /go/bin/govendor test +local
+  stage: test
+  script:
+    - go get -u github.com/kardianos/govendor
+    - /go/bin/govendor test +local
 
 test2:
   stage: test
   script:
-      - sleep 3
-      - echo "We did it! Something else runs in parallel!"
+    - sleep 3
+    - echo "We did it! Something else runs in parallel!"
 
 compile:
-    stage: build
-    variables:
-      VERSION: "1.0.18"
-    script:
-        # Add here all the dependencies, or use glide/govendor/...
-        # to get them automatically.
-        # TODO Better put this in a Makefile soon
-        - go build -race -ldflags "-X gitlab.zerbytes.net/${CI_PROJECT_PATH}/vendor/github.com/prometheus/common/version.Version=$VERSION -X gitlab.zerbytes.net/${CI_PROJECT_PATH}/vendor/github.com/prometheus/common/version.Revision=${CI_COMMIT_SHA} -X gitlab.zerbytes.net/${CI_PROJECT_PATH}/vendor/github.com/prometheus/common/version.Branch=${CI_COMMIT_REF_NAME} -X gitlab.zerbytes.net/${CI_PROJECT_PATH}/vendor/github.com/prometheus/common/version.BuildUser=$(whoami)@$(hostname) -X gitlab.zerbytes.net/${CI_PROJECT_PATH}/vendor/github.com/prometheus/common/version.BuildDate=$(date +%Y%m%d-%H:%M:%S) -extldflags '-static'" -o app
-    artifacts:
-        paths:
-            - app
+  stage: build
+  variables:
+    VERSION: "1.0.18"
+  script:
+    # Add here all the dependencies, or use glide/govendor/...
+    # to get them automatically.
+    # TODO Better put this in a Makefile soon
+    - go build -race -ldflags "-X gitlab.zerbytes.net/${CI_PROJECT_PATH}/vendor/github.com/prometheus/common/version.Version=$VERSION -X gitlab.zerbytes.net/${CI_PROJECT_PATH}/vendor/github.com/prometheus/common/version.Revision=${CI_COMMIT_SHA} -X gitlab.zerbytes.net/${CI_PROJECT_PATH}/vendor/github.com/prometheus/common/version.Branch=${CI_COMMIT_REF_NAME} -X gitlab.zerbytes.net/${CI_PROJECT_PATH}/vendor/github.com/prometheus/common/version.BuildUser=$(whoami)@$(hostname) -X gitlab.zerbytes.net/${CI_PROJECT_PATH}/vendor/github.com/prometheus/common/version.BuildDate=$(date +%Y%m%d-%H:%M:%S) -extldflags '-static'" -o app
+  artifacts:
+    paths:
+      - app
 
-# example job to upload the built release to an S3 server with mc
+# Example job to upload the built release to a S3 server with mc
 #release_upload:
-#    stage: release
-#    image: minio/mc
-#    script:
-#      - echo "=> We already have artifact sotrage in GitLab! This is for demonstational purposes only."
-#      - mc config host add edenmalmoe https://s3.edenmal.net ${ACCESS_KEY} ${SECRET_KEY} S3v4
-#      - mc mb -p edenmalmoe/build-release-${CI_PROJECT_NAME}/
-#      - mc cp app edenmalmoe/build-release-${CI_PROJECT_NAME}/
+#  stage: release
+#  image: minio/mc
+#  script:
+#    - echo "=> We already have artifact sotrage in GitLab! This is for demonstational purposes only."
+#    - mc config host add edenmalmoe https://s3.edenmal.net ${ACCESS_KEY} ${SECRET_KEY} S3v4
+#    - mc mb -p edenmalmoe/build-release-${CI_PROJECT_NAME}/
+#    - mc cp app edenmalmoe/build-release-${CI_PROJECT_NAME}/
 
 
 image_build:
-    stage: release
-    image: docker:latest
-    variables:
-        DOCKER_HOST: tcp://localhost:2375
-    services:
-        - docker:dind
-    script:
-        - docker info
-        - docker login -u gitlab-ci-token -p ${CI_JOB_TOKEN} registry.zerbytes.net
-        - docker build -t registry.zerbytes.net/${CI_PROJECT_PATH}:latest .
-        - docker tag registry.zerbytes.net/${CI_PROJECT_PATH}:latest registry.zerbytes.net/${CI_PROJECT_PATH}:${CI_COMMIT_REF_NAME}
-        - test ! -z "${CI_COMMIT_TAG}" && docker push registry.zerbytes.net/${CI_PROJECT_PATH}:latest
-        - docker push registry.zerbytes.net/${CI_PROJECT_PATH}:${CI_COMMIT_REF_NAME}
+  stage: release
+  image: docker:latest
+  variables:
+    DOCKER_HOST: tcp://localhost:2375
+  services:
+    - docker:dind
+  script:
+    - docker info
+    - docker login -u gitlab-ci-token -p ${CI_JOB_TOKEN} registry.zerbytes.net
+    - docker build -t registry.zerbytes.net/${CI_PROJECT_PATH}:latest .
+    - docker tag registry.zerbytes.net/${CI_PROJECT_PATH}:latest registry.zerbytes.net/${CI_PROJECT_PATH}:${CI_COMMIT_REF_NAME}
+    - test ! -z "${CI_COMMIT_TAG}" && docker push registry.zerbytes.net/${CI_PROJECT_PATH}:latest
+    - docker push registry.zerbytes.net/${CI_PROJECT_PATH}:${CI_COMMIT_REF_NAME}
 
-deploy_dev:
-    image: registry.gitlab.com/gitlab-examples/kubernetes-deploy
-    stage: deploy
-    environment:
-        name: dev
-        url: https://dev-presentation-gitlab-k8s.edenmal.net
-    script:
-        - echo "${KUBE_CA_PEM}" > kube_ca.pem
-        - kubectl config set-cluster default-cluster --server=${KUBE_URL} --certificate-authority="$(pwd)/kube_ca.pem"
-        - kubectl config set-credentials default-admin --token=${KUBE_TOKEN}
-        - kubectl config set-context default-system --cluster=default-cluster --user=default-admin --namespace ${KUBE_NAMESPACE}
-        - kubectl config use-context default-system
-        - kubectl cluster-info
-        - cd manifests/
-        - sed -i "s/__CI_ENVIRONMENT_SLUG__/${CI_ENVIRONMENT_SLUG}/" deployment.yaml ingress.yaml service.yaml
-        - sed -i "s/__VERSION__/${CI_COMMIT_REF_NAME}/" deployment.yaml ingress.yaml service.yaml
-        - kubectl get deployments -l app=${CI_ENVIRONMENT_SLUG}
-        - if [[ $(kubectl apply -f deployment.yaml) == *"unchanged"* ]]; then kubectl patch deployment ${CI_ENVIRONMENT_SLUG} -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"ci-last-updated\":\"$(date +'%s')\"}}}}}"; fi
-        - kubectl apply -f service.yaml || true
-        - kubectl apply -f ingress.yaml
+deploy_review:
+  image: registry.gitlab.com/gitlab-examples/kubernetes-deploy
+  stage: review
+  environment:
+    name: review/$CI_BUILD_REF_NAME
+    url: https://$CI_BUILD_REF_SLUG-presentation-gitlab-k8s.edenmal.net
+    on_stop: stop_review
+  script:
+    - echo "${KUBE_CA_PEM}" > kube_ca.pem
+    - kubectl config set-cluster default-cluster --server=${KUBE_URL} --certificate-authority="$(pwd)/kube_ca.pem"
+    - kubectl config set-credentials default-admin --token=${KUBE_TOKEN}
+    - kubectl config set-context default-system --cluster=default-cluster --user=default-admin --namespace ${KUBE_NAMESPACE}
+    - kubectl config use-context default-system
+    - kubectl cluster-info
+    - cd manifests/
+    - sed -i "s/__CI_ENVIRONMENT_SLUG__/${CI_ENVIRONMENT_SLUG}/" deployment.yaml ingress.yaml service.yaml
+    - sed -i "s/__VERSION__/${CI_COMMIT_REF_NAME}/" deployment.yaml ingress.yaml service.yaml
+    - kubectl get deployments -l app=${CI_ENVIRONMENT_SLUG}
+    - if [[ $(kubectl apply -f deployment.yaml) == *"unchanged"* ]]; then kubectl patch deployment ${CI_ENVIRONMENT_SLUG} -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"ci-last-updated\":\"$(date +'%s')\"}}}}}"; fi
+    - kubectl apply -f service.yaml || true
+    - kubectl apply -f ingress.yaml
+
+stop_review:
+  image: registry.gitlab.com/gitlab-examples/kubernetes-deploy
+  stage: review
+  environment:
+    name: review/$CI_BUILD_REF_NAME
+    action: stop
+  script:
+    - echo "${KUBE_CA_PEM}" > kube_ca.pem
+    - kubectl config set-cluster default-cluster --server=${KUBE_URL} --certificate-authority="$(pwd)/kube_ca.pem"
+    - kubectl config set-credentials default-admin --token=${KUBE_TOKEN}
+    - kubectl config set-context default-system --cluster=default-cluster --user=default-admin --namespace ${KUBE_NAMESPACE}
+    - kubectl config use-context default-system
+    - kubectl cluster-info
+    - cd manifests/
+    - sed -i "s/__CI_ENVIRONMENT_SLUG__/${CI_ENVIRONMENT_SLUG}/" deployment.yaml ingress.yaml service.yaml
+    - sed -i "s/__VERSION__/${CI_COMMIT_REF_NAME}/" deployment.yaml ingress.yaml service.yaml
+    - kubectl get deployments -l app=${CI_ENVIRONMENT_SLUG}
+    - kubectl delete -f deployment.yaml -f service.yaml -f ingress.yaml
+    - kubectl delete -f service.yaml
+    - kubectl delete -f ingress.yaml
 
 deploy_live:
-    image: registry.gitlab.com/gitlab-examples/kubernetes-deploy
-    stage: deploy
-    environment:
-        name: live
-        url: https://live-presentation-gitlab-k8s.edenmal.net
-    only:
-        - tags
-    when: manual
-    script:
-        - echo "${KUBE_CA_PEM}" > kube_ca.pem
-        - kubectl config set-cluster default-cluster --server=${KUBE_URL} --certificate-authority="$(pwd)/kube_ca.pem"
-        - kubectl config set-credentials default-admin --token=${KUBE_TOKEN}
-        - kubectl config set-context default-system --cluster=default-cluster --user=default-admin --namespace ${KUBE_NAMESPACE}
-        - kubectl config use-context default-system
-        - kubectl cluster-info
-        - cd manifests/
-        - sed -i "s/__CI_ENVIRONMENT_SLUG__/${CI_ENVIRONMENT_SLUG}/" deployment.yaml ingress.yaml service.yaml
-        - sed -i "s/__VERSION__/${CI_COMMIT_REF_NAME}/" deployment.yaml ingress.yaml service.yaml
-        - kubectl get deployments -l app=${CI_ENVIRONMENT_SLUG}
-        - kubectl apply -f deployment.yaml
-        - kubectl apply -f service.yaml || true
-        - kubectl apply -f ingress.yaml
+  image: registry.gitlab.com/gitlab-examples/kubernetes-deploy
+  stage: deploy
+  environment:
+    name: live
+    url: https://live-presentation-gitlab-k8s.edenmal.net
+  only:
+    - tags
+  when: manual
+  script:
+    - echo "${KUBE_CA_PEM}" > kube_ca.pem
+    - kubectl config set-cluster default-cluster --server=${KUBE_URL} --certificate-authority="$(pwd)/kube_ca.pem"
+    - kubectl config set-credentials default-admin --token=${KUBE_TOKEN}
+    - kubectl config set-context default-system --cluster=default-cluster --user=default-admin --namespace ${KUBE_NAMESPACE}
+    - kubectl config use-context default-system
+    - kubectl cluster-info
+    - cd manifests/
+    - sed -i "s/__CI_ENVIRONMENT_SLUG__/${CI_ENVIRONMENT_SLUG}/" deployment.yaml ingress.yaml service.yaml
+    - sed -i "s/__VERSION__/${CI_COMMIT_REF_NAME}/" deployment.yaml ingress.yaml service.yaml
+    - kubectl get deployments -l app=${CI_ENVIRONMENT_SLUG}
+    - kubectl apply -f deployment.yaml
+    - kubectl apply -f service.yaml || true
+    - kubectl apply -f ingress.yaml
