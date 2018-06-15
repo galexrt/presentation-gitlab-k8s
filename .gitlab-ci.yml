@@ -70,9 +70,8 @@ deploy_review:
   stage: review
   only:
     - branches
-    - tags
   except:
-    - master
+    - tags
   environment:
     name: review/$CI_BUILD_REF_NAME
     url: https://$CI_BUILD_REF_SLUG-presentation-gitlab-k8s.edenmal.net
@@ -94,6 +93,10 @@ stop_review:
   variables:
     GIT_STRATEGY: none
   when: manual
+  only:
+    - branches
+  except:
+    - tags
   environment:
     name: review/$CI_BUILD_REF_NAME
     action: stop
