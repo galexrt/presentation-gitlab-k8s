@@ -17,6 +17,21 @@ This list is just an excerpt:
 * [GitLab + Kubernetes: GitLab on top of Kubernetes](https://edenmal.moe/post/2017/GitLab-Kubernetes-GitLab-on-top-of-Kubernetes/)
 * [GitLab: Use Keycloak as SAML 2.0 OmniAuth Provider](https://edenmal.moe/post/2018/GitLab-Keycloak-SAML-2-0-OmniAuth-Provider/)
 
+## Table of Contents
+   * [presentation-gitlab-k8s](#presentation-gitlab-k8s)
+      * [Requirements](#requirements)
+      * [Using this repository](#using-this-repository)
+      * [GitLab Docs References](#gitlab-docs-references)
+      * [File Structure](#file-structure)
+         * [Example Application](#example-application)
+         * [Kubernetes Base GitLab CI Manifests](#kubernetes-base-gitlab-ci-manifests)
+         * [Build Process](#build-process)
+         * [Deployment Manifests](#deployment-manifests)
+         * [Miscellaneous](#miscellaneous)
+      * [Usage](#usage)
+      * [Thanks!](#thanks)
+      * [ToDo](#todo)
+
 ## Requirements
 The following points are required for this repository to work correctly:
 * GitLab (>= `10.4`) with the following features configured:
