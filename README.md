@@ -29,7 +29,6 @@ This list is just an excerpt:
          * [Deployment Manifests](#deployment-manifests)
          * [Miscellaneous](#miscellaneous)
       * [Thanks!](#thanks)
-      * [ToDo](#todo)
 
 ## Requirements
 The following points are required for this repository to work correctly:
@@ -93,6 +92,3 @@ As of GitLab `10.3` the Kubernetes Integration is marked as deprecated and with 
 
 ## Thanks!
 Thanks to [@shadycuz - GitHub](https://github.com/shadycuz) for his comments with improvements for the code in this repository!
-
-## ToDo
-- [ ] Implement app review, see https://gitlab.com/gitlab-examples/review-apps-nginx/blob/master/.gitlab-ci.yml
