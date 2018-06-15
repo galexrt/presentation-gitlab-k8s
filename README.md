@@ -75,6 +75,9 @@ As of GitLab `10.3` the Kubernetes Integration is marked as deprecated and with 
 ### Miscellaneous
 * [`media/`](/media/) - Contains media for the [`README.md`](/README.md) in this repository.
 
+## Usage
+For information on how to use these files and setup GitLab Kubernetes cluster/integration, see the above blog post and in specific this post [GitLab + Kubernetes: Perfect Match for Continuous Delivery with Container](https://edenmal.moe/post/2017/GitLab-Kubernetes-Perfect-Match-for-Continuous-Delivery-with-Container/).
+
 ## Thanks!
 Thanks to [@shadycuz - GitHub](https://github.com/shadycuz) for his comments with improvements for the code in this repository!
 
