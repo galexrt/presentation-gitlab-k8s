@@ -84,13 +84,13 @@ deploy_review:
   script:
     - kubectl version
     - cd manifests/
-    - sed -i "s/__CI_ENVIRONMENT_SLUG__/${CI_ENVIRONMENT_SLUG}/" deployment.yaml ingress.yaml service.yaml
+    - sed -i "s/__CI_BUILD_REF_SLUG__/${CI_BUILD_REF_SLUG}/" deployment.yaml ingress.yaml service.yaml
     - sed -i "s/__VERSION__/${CI_COMMIT_REF_NAME}/" deployment.yaml ingress.yaml service.yaml
-    - if [[ "$(kubectl apply -f deployment.yaml)" == *"unchanged"* ]]; then kubectl patch deployment ${CI_ENVIRONMENT_SLUG} -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"ci-last-updated\":\"$(date +'%s')\"}}}}}"; fi
+    - if [[ "$(kubectl apply -f deployment.yaml)" == *"unchanged"* ]]; then kubectl patch deployment ${CI_BUILD_REF_SLUG} -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"ci-last-updated\":\"$(date +'%s')\"}}}}}"; fi
     - kubectl apply -f service.yaml || true
     - kubectl apply -f ingress.yaml
     - kubectl rollout status -f deployment.yaml
-    - kubectl get all,ing -l app=${CI_ENVIRONMENT_SLUG}
+    - kubectl get all,ing -l app=${CI_BUILD_REF_SLUG}
 
 stop_review:
   image: lachlanevenson/k8s-kubectl:latest
@@ -103,8 +103,8 @@ stop_review:
     action: stop
   script:
     - kubectl version
-    - kubectl delete ing -l app=${CI_ENVIRONMENT_SLUG}
-    - kubectl delete all -l app=${CI_ENVIRONMENT_SLUG}
+    - kubectl delete ing -l app=${CI_BUILD_REF_SLUG}
+    - kubectl delete all -l app=${CI_BUILD_REF_SLUG}
 
 deploy_live:
   image: lachlanevenson/k8s-kubectl:latest
@@ -118,7 +118,7 @@ deploy_live:
   script:
     - kubectl version
     - cd manifests/
-    - sed -i "s/__CI_ENVIRONMENT_SLUG__/${CI_ENVIRONMENT_SLUG}/" deployment.yaml ingress.yaml service.yaml
+    - sed -i "s/__CI_BUILD_REF_SLUG__/${CI_ENVIRONMENT_SLUG}/" deployment.yaml ingress.yaml service.yaml
     - sed -i "s/__VERSION__/${CI_COMMIT_REF_NAME}/" deployment.yaml ingress.yaml service.yaml
     - kubectl apply -f deployment.yaml
     - kubectl apply -f service.yaml || true

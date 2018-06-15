@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: presentation-gitlab-k8s-__CI_ENVIRONMENT_SLUG__
+  name: presentation-gitlab-k8s-__CI_BUILD_REF_SLUG__
   namespace: presentation-gitlab-k8s
   labels:
-    app: __CI_ENVIRONMENT_SLUG__
+    app: __CI_BUILD_REF_SLUG__
   annotations:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8000"
@@ -17,4 +17,4 @@ spec:
       port: 8000
       protocol: TCP
   selector:
-    app: __CI_ENVIRONMENT_SLUG__
+    app: __CI_BUILD_REF_SLUG__
