@@ -4,16 +4,26 @@ metadata:
   name: gitlab-ci
   namespace: presentation-gitlab-k8s
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: presentation-gitlab-k8s
+  name: gitlab-ci
+rules:
+- apiGroups: [""]
+  resources: ["*"]
+  verbs: ["*"]
+---
 kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: gitlab-ci
   namespace: presentation-gitlab-k8s
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: cluster-admin
 subjects:
 - kind: ServiceAccount
   name: gitlab-ci
   namespace: presentation-gitlab-k8s
+roleRef:
+  kind: Role
+  name: gitlab-ci
+  apiGroup: rbac.authorization.k8s.io
