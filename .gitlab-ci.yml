@@ -82,11 +82,11 @@ deploy_review:
     - sed -i "s/__CI_BUILD_REF_SLUG__/${CI_BUILD_REF_SLUG}/" deployment.yaml ingress.yaml service.yaml
     - sed -i "s/__VERSION__/${CI_COMMIT_REF_NAME}/" deployment.yaml ingress.yaml service.yaml
     - |
-      if [[ $(kubectl apply -f deployment.yaml) = *"unchanged"* ]]; then
-          echo "Patching deployment to update image"
+      if kubectl apply -f deployment.yaml | grep -q unchanged; then
+          echo "=> Patching deployment to force image update."
           kubectl patch -f deployment.yaml -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"ci-last-updated\":\"$(date +'%s')\"}}}}}"
       else
-          echo "Deployment apply has changed the object, no need to patch."
+          echo "=> Deployment apply has changed the object, no need to force image update."
       fi
     - kubectl apply -f service.yaml || true
     - kubectl apply -f ingress.yaml
