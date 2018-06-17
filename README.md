@@ -1,16 +1,15 @@
 # presentation-gitlab-k8s
-These are the example files for my presentation about GitLab + Kubernetes for Continuous Integration and Delivery.
-These files may also be used in my other GitLab posts about GitLab CI.
+These are the example files for my presentation about GitLab + Kubernetes for Continuous Integration and Delivery. They are also partly used in my GitLab CI posts.
 
 ![Kubernetes and GitLab](/media/kubernetes-and-gitLab.png)
 
-**INFO** This isn't the best way to deploy to K8s, this is more of an example how simple it can be.
+**INFO** This isn't the best way to deploy application Docker images to K8s, this is more of an example how simple it can be.
 
 The presentation can be found here: [Kubernetes - WYNTK - GitLab CI + Kubernetes Presentation](https://edenmal.moe/post/2017/Kubernetes-WYNTK-GitLab-CI-Kubernetes-Presentation/).
-The blog post these files were specifically used in is here: [GitLab + Kubernetes: Perfect Match for Continuous Delivery with Container](https://edenmal.moe/post/2017/GitLab-Kubernetes-Perfect-Match-for-Continuous-Delivery-with-Container/).
+The blog post these files are specifically used in is here: [GitLab + Kubernetes: Perfect Match for Continuous Delivery with Container](https://edenmal.moe/post/2017/GitLab-Kubernetes-Perfect-Match-for-Continuous-Delivery-with-Container/).
 
 An uptodate list of all my blog posts around GitLab and Kubernetes can be found on [this page](https://edenmal.moe/tags/gitlab/).
-This list is just an excerpt:
+This list is just an excerpt of some of my GitLab posts:
 * [GitLab + Kubernetes: Perfect Match for Continuous Delivery with Container](https://edenmal.moe/post/2017/GitLab-Kubernetes-Perfect-Match-for-Continuous-Delivery-with-Container/)
 * [Kubernetes - WYNTK - GitLab CI + Kubernetes Presentation](https://edenmal.moe/post/2017/Kubernetes-WYNTK-GitLab-CI-Kubernetes-Presentation/)
 * [GitLab + Kubernetes: Running CI Runners in Kubernetes](https://edenmal.moe/post/2017/GitLab-Kubernetes-Running-CI-Runners-in-Kubernetes/)
@@ -19,6 +18,7 @@ This list is just an excerpt:
 
 ## Table of Contents
 * [Requirements](#requirements)
+* [Features](#features)
 * [Using this repository](#using-this-repository)
 * [GitLab Docs References](#gitlab-docs-references)
 * [File Structure](#file-structure)
@@ -28,6 +28,15 @@ This list is just an excerpt:
     * [Deployment Manifests](#deployment-manifests)
     * [Miscellaneous](#miscellaneous)
 * [Thanks!](#thanks)
+
+## Features
+This repository shows off/uses the following GitLab CI features:
+* [GitLab CI](https://docs.gitlab.com/ce/ci/README.html)
+    * [Manual CI Steps](https://docs.gitlab.com/ce/ci/yaml/#when-manual)
+    * [Artifacts](https://docs.gitlab.com/ce/user/project/pipelines/job_artifacts.html)
+    * [App review](https://docs.gitlab.com/ce/ci/review_apps/index.html)
+* [GitLab Container Registry](https://docs.gitlab.com/ce/user/project/container_registry.html)
+* [GitLab CI Kubernetes Cluster Integration](https://docs.gitlab.com/ce/user/project/clusters/index.html)
 
 ## Requirements
 The following points are required for this repository to work correctly:
