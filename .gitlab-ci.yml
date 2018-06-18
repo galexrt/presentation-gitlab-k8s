@@ -1,4 +1,4 @@
-image: golang:1.10.2-stretch
+image: golang:1.10.3-stretch
 
 # The problem is that to be able to use go get, one needs to put
 # the repository in the $GOPATH. So for example if your gitlab domain
