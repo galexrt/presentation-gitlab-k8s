@@ -10,6 +10,7 @@ The blog post these files are specifically used in is here: [GitLab + Kubernetes
 
 An uptodate list of all my blog posts around GitLab and Kubernetes can be found on [this page](https://edenmal.moe/tags/gitlab/).
 This list is just an excerpt of some of my GitLab posts:
+* [GitLab + Kubernetes: Using GitLab CI's Kubernetes Cluster feature](https://edenmal.moe/post/2018/GitLab-Kubernetes-Using-GitLab-CIs-Kubernetes-Cluster-feature/)
 * [GitLab + Kubernetes: Perfect Match for Continuous Delivery with Container](https://edenmal.moe/post/2017/GitLab-Kubernetes-Perfect-Match-for-Continuous-Delivery-with-Container/)
 * [Kubernetes - WYNTK - GitLab CI + Kubernetes Presentation](https://edenmal.moe/post/2017/Kubernetes-WYNTK-GitLab-CI-Kubernetes-Presentation/)
 * [GitLab + Kubernetes: Running CI Runners in Kubernetes](https://edenmal.moe/post/2017/GitLab-Kubernetes-Running-CI-Runners-in-Kubernetes/)
