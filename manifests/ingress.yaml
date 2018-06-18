@@ -9,10 +9,11 @@ metadata:
     kubernetes.io/tls-acme: "true"
     kubernetes.io/ingress.class: "nginx"
 spec:
-# the secret used here is an unsigned wildcard cert for demo purposes
   tls:
   - hosts:
     - __CI_BUILD_REF_SLUG__-presentation-gitlab-k8s.edenmal.net
+    # the secret used here is an unsigned wildcard cert for demo purposes
+    # use your own or comment this out
     secretName: tls-wildcard-demo
   rules:
   - host: __CI_BUILD_REF_SLUG__-presentation-gitlab-k8s.edenmal.net
