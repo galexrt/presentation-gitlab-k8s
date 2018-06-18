@@ -55,7 +55,7 @@ You have to replace the following addresses in all files:
 * `registry.zerbytes.net` with your Docker registry address (e.g. `registry.example.com`).
 * `edenmal.net` (in the Ingress manifest) with your domain name.
     * You probably also want to change the subdomain name while you are at it.
-* `presentatio-gitlab-k8s` with the Namespace name of your choice.
+* `presentation-gitlab-k8s` with the Namespace name of your choice.
 
 You also need to create a "Docker Login" Secret which contains your GitLab Registry access data (e.g. Username and Access token with registry access) named `regsecret` in the Namespace `presentation-gitlab-k8s`.
 A guide for that can be found here: [Kubernetes.io - Pull an Image from a Private Registry](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/).
