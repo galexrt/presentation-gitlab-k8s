@@ -60,11 +60,11 @@ image_build:
     - docker:dind
   script:
     - docker info
-    - docker login -u gitlab-ci-token -p ${CI_JOB_TOKEN} registry.zerbytes.net
-    - docker build -t registry.zerbytes.net/${CI_PROJECT_PATH}:latest .
-    - docker tag registry.zerbytes.net/${CI_PROJECT_PATH}:latest registry.zerbytes.net/${CI_PROJECT_PATH}:${CI_COMMIT_REF_NAME}
-    - test ! -z "${CI_COMMIT_TAG}" && docker push registry.zerbytes.net/${CI_PROJECT_PATH}:latest
-    - docker push registry.zerbytes.net/${CI_PROJECT_PATH}:${CI_COMMIT_REF_NAME}
+    - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
+    - docker build -t ${CI_REGISTRY_IMAGE}:latest .
+    - docker tag ${CI_REGISTRY_IMAGE}:latest ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
+    - test ! -z "${CI_COMMIT_TAG}" && docker push ${CI_REGISTRY_IMAGE}:latest
+    - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
 
 deploy_review:
   image: lachlanevenson/k8s-kubectl:latest
