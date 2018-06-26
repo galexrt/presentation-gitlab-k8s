@@ -1,19 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: __CI_ENVIRONMENT_SLUG__
+  name: presentation-gitlab-k8s-__CI_ENVIRONMENT_SLUG__
   labels:
-    app: __CI_ENVIRONMENT_SLUG__
+    app: presentation-gitlab-k8s
+    ref: __CI_ENVIRONMENT_SLUG__
     track: stable
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: __CI_ENVIRONMENT_SLUG__
+      app: presentation-gitlab-k8s
+      ref: __CI_ENVIRONMENT_SLUG__
   template:
     metadata:
       labels:
-        app: __CI_ENVIRONMENT_SLUG__
+        app: presentation-gitlab-k8s
+        ref: __CI_ENVIRONMENT_SLUG__
         track: stable
     spec:
       imagePullSecrets:

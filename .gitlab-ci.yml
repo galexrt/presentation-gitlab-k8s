@@ -92,7 +92,7 @@ deploy_review:
     - kubectl apply -f service.yaml || true
     - kubectl apply -f ingress.yaml
     - kubectl rollout status -f deployment.yaml
-    - kubectl get all,ing -l app=${CI_ENVIRONMENT_SLUG}
+    - kubectl get all,ing -l ref=${CI_ENVIRONMENT_SLUG}
 
 stop_review:
   image: lachlanevenson/k8s-kubectl:latest
@@ -110,8 +110,8 @@ stop_review:
     action: stop
   script:
     - kubectl version
-    - kubectl delete ing -l app=${CI_ENVIRONMENT_SLUG}
-    - kubectl delete all -l app=${CI_ENVIRONMENT_SLUG}
+    - kubectl delete ing -l ref=${CI_ENVIRONMENT_SLUG}
+    - kubectl delete all -l ref=${CI_ENVIRONMENT_SLUG}
 
 deploy_live:
   image: lachlanevenson/k8s-kubectl:latest
@@ -131,4 +131,4 @@ deploy_live:
     - kubectl apply -f service.yaml
     - kubectl apply -f ingress.yaml
     - kubectl rollout status -f deployment.yaml
-    - kubectl get all,ing -l app=${CI_ENVIRONMENT_SLUG}
+    - kubectl get all,ing -l ref=${CI_ENVIRONMENT_SLUG}

@@ -82,6 +82,8 @@ As of GitLab `10.3` the Kubernetes Integration is marked as deprecated and with 
 
 ### Kubernetes Base GitLab CI Manifests
 * [`gitlab-ci/`](/gitlab-ci/)
+    * [`monitoring/`](/gitlab-ci/monitoring/)
+        * [`service-monitor.yaml`](/gitlab-ci/monitoring/service-monitor.yaml) - Contains a coreos/prometheus-operator ServiceMonitor manifest to automatically monitor the application(s).
     * [`namespace.yaml`](/gitlab-ci/namespace.yaml) - Namespace in which the GitLab CI will deploy the application.
     * [`rbac.yaml`](/gitlab-ci/rbac.yaml) - Contains GitLab CI RBAC Role, RoleBinding and ServiceAccount.
     * [`secret.yaml`](/gitlab-ci/secret.yaml) - Contains a TLS wildcard certificate for the application Ingress.

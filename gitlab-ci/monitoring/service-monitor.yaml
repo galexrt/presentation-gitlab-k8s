@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: presentation-gitlab-k8s
+  namespace: presentation-gitlab-k8s
+spec:
+  selector:
+    matchLabels:
+      app: presentation-gitlab-k8s
+  namespaceSelector:
+    matchNames:
+    - presentation-gitlab-k8s
+  endpoints:
+  - port: http-metrics
+    interval: 15s
