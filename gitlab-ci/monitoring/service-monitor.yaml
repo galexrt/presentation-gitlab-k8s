@@ -2,7 +2,11 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: presentation-gitlab-k8s
-  namespace: presentation-gitlab-k8s
+  # Change this to the namespace the Prometheus instance is running in
+  namespace: zerbytes-live-proj-monitoring
+  labels:
+    app: presentation-gitlab-k8s
+    prometheus: zerbytes-apl
 spec:
   selector:
     matchLabels:

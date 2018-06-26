@@ -58,6 +58,11 @@ You have to replace the following addresses in all files:
     * You probably also want to change the subdomain name while you are at it.
 * `presentation-gitlab-k8s` with the Namespace name of your choice.
 
+If you are using [coreos/prometheus-operator](https://github.com/coreos/prometheus-operator), then you also need to replace
+`zerbytes-live-proj-monitoring` with the Namespace your Prometheus instance is running in,
+in this file [`/gitlab-ci/monitoring/service-monitor.yaml`](/gitlab-ci/monitoring/service-monitor.yaml).
+You then also want to `kubectl` create/apply the file to your Kubernetes cluster during creation/apply process for the manifests in [`gitlab-ci/`](/gitlab-ci/).
+
 You also need to create a "Docker Login" Secret which contains your GitLab Registry access data (e.g. Username and Access token with registry access) named `regsecret` in the Namespace `presentation-gitlab-k8s`.
 A guide for that can be found here: [Kubernetes.io - Pull an Image from a Private Registry](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/).
 The Namespace manifest is in the [`gitlab-ci/`](/gitlab-ci/) directory.
