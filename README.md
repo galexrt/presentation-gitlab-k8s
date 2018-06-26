@@ -39,6 +39,9 @@ This repository shows off/uses the following GitLab CI features:
 * [GitLab Container Registry](https://docs.gitlab.com/ce/user/project/container_registry.html)
 * [GitLab CI Kubernetes Cluster Integration](https://docs.gitlab.com/ce/user/project/clusters/index.html)
 
+Other features also shown are:
+* [coreos/prometheus-operator ServiceMonitor]() - for automatic monitoring of deployed applications.
+
 ## Requirements
 The following points are required for this repository to work correctly:
 * GitLab (>= `10.4`) with the following features configured:
