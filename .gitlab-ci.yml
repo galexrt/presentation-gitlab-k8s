@@ -1,4 +1,6 @@
-image: golang:1.10.3-stretch
+image:
+  name: golang:1.10.3-stretch
+  entrypoint: ["/bin/sh", "-c"]
 
 # The problem is that to be able to use go get, one needs to put
 # the repository in the $GOPATH. So for example if your gitlab domain
@@ -43,7 +45,9 @@ compile:
 # For this you need to set `S3_ACCESS_KEY` and `S3_SECRET_KEY` in your GitLab project CI's secret variables
 #release_upload:
 #  stage: release
-#  image: minio/mc
+#  image:
+#    name: minio/mc
+#    entrypoint: ["/bin/sh", "-c"]
 #  script:
 #    - echo "=> We already have artifact sotrage in GitLab! This is for demonstational purposes only."
 #    - mc config host add edenmalmoe https://s3.edenmal.net ${ACCESS_KEY} ${SECRET_KEY} S3v4
@@ -53,7 +57,9 @@ compile:
 
 image_build:
   stage: release
-  image: docker:latest
+  image:
+    name: docker:latest
+    entrypoint: ["/bin/sh", "-c"]
   variables:
     DOCKER_HOST: tcp://localhost:2375
   services:
@@ -67,7 +73,9 @@ image_build:
     - docker push "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}"
 
 deploy_review:
-  image: lachlanevenson/k8s-kubectl:latest
+  image:
+    name: lachlanevenson/k8s-kubectl:latest
+    entrypoint: ["/bin/sh", "-c"]
   stage: review
   only:
     - branches
@@ -95,7 +103,9 @@ deploy_review:
     - kubectl get all,ing -l ref=${CI_ENVIRONMENT_SLUG}
 
 stop_review:
-  image: lachlanevenson/k8s-kubectl:latest
+  image:
+    name: lachlanevenson/k8s-kubectl:latest
+    entrypoint: ["/bin/sh", "-c"]
   stage: review
   variables:
     GIT_STRATEGY: none
@@ -114,7 +124,9 @@ stop_review:
     - kubectl delete all -l ref=${CI_ENVIRONMENT_SLUG}
 
 deploy_live:
-  image: lachlanevenson/k8s-kubectl:latest
+  image:
+    name: lachlanevenson/k8s-kubectl:latest
+    entrypoint: ["/bin/sh", "-c"]
   stage: deploy
   environment:
     name: live
