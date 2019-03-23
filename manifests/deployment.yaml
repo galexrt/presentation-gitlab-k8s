@@ -24,7 +24,7 @@ spec:
         - name: regsecret
       containers:
       - name: app
-        image: registry.zerbytes.net/atrost/presentation-gitlab-k8s:__VERSION__
+        image: __CI_REGISTRY_IMAGE__:__VERSION__
         imagePullPolicy: Always
         ports:
         - name: http-metrics

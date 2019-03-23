@@ -62,7 +62,6 @@ The following points are required for this repository to work correctly:
 
 You have to replace the following addresses in all files:
 * `gitlab.zerbytes.net` with your GitLab address (e.g. `gitlab.example.com`).
-* `registry.zerbytes.net` with your Docker registry address (e.g. `registry.example.com`).
 * `edenmal.net` (in the Ingress manifest) with your domain name.
     * You probably also want to change the subdomain name while you are at it.
 * `presentation-gitlab-k8s` with the Namespace name of your choice.
