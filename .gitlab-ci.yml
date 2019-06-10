@@ -43,7 +43,6 @@ compile:
 #    - mc mb -p edenmalmoe/build-release-${CI_PROJECT_NAME}/
 #    - mc cp app edenmalmoe/build-release-${CI_PROJECT_NAME}/
 
-
 image_build:
   stage: release
   image:
@@ -90,7 +89,7 @@ deploy_review:
     - kubectl apply -f service.yaml || true
     - kubectl apply -f ingress.yaml
     - kubectl rollout status -f deployment.yaml
-    - kubectl get all,ing -l ref=${CI_ENVIRONMENT_SLUG}
+    - kubectl get deploy,svc,ing,pod -l app="$(echo ${CI_PROJECT_NAME} | tr "." "-")-${CI_ENVIRONMENT_SLUG}"
 
 stop_review:
   image:
@@ -134,4 +133,4 @@ deploy_live:
     - kubectl apply -f service.yaml
     - kubectl apply -f ingress.yaml
     - kubectl rollout status -f deployment.yaml
-    - kubectl get all,ing -l ref=${CI_ENVIRONMENT_SLUG}
+    - kubectl get deploy,svc,ing,pod -l app="$(echo ${CI_PROJECT_NAME} | tr "." "-")-${CI_ENVIRONMENT_SLUG}"
