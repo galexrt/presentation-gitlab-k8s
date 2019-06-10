@@ -44,7 +44,7 @@ func main() {
 	log.Info("Starting presentation-gitlab-k8s application..")
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		hostname, _ := os.Hostname()
-		w.Write([]byte("Hello Golang Meetup Karlsruhe!!\n"))
+		w.Write([]byte("Hello Golang DevOpsCon Conference 2019 Berlin!\n"))
 		w.Write([]byte("Hostname: " + hostname + "\n"))
 		w.Write([]byte("Version Info:\n"))
 		w.Write([]byte(version.Print("app") + "\n"))
