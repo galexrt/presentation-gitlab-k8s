@@ -2,17 +2,6 @@ image:
   name: golang:1.12.5-stretch
   entrypoint: ["/bin/sh", "-c"]
 
-# The problem is that to be able to use go get, one needs to put
-# the repository in the $GOPATH. So for example if your gitlab domain
-# is mydomainperso.com, and that your repository is repos/projectname, and
-# the default GOPATH being /go, then you'd need to have your
-# repository in /go/src/mydomainperso.com/repos/projectname
-# Thus, making a symbolic link corrects this.
-before_script:
-  - mkdir -p "/go/src/gitlab.zerbytes.net/${CI_PROJECT_NAMESPACE}"
-  - ln -sf "${CI_PROJECT_DIR}" "/go/src/gitlab.zerbytes.net/${CI_PROJECT_PATH}"
-  - cd "/go/src/gitlab.zerbytes.net/${CI_PROJECT_PATH}/"
-
 stages:
   - test
   - build

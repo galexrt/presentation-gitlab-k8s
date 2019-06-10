@@ -20,8 +20,6 @@ spec:
         ref: __CI_ENVIRONMENT_SLUG__
         track: stable
     spec:
-      imagePullSecrets:
-        - name: regsecret
       containers:
       - name: app
         image: __CI_REGISTRY_IMAGE__:__VERSION__
