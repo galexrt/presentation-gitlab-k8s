@@ -7,11 +7,12 @@ These are the example files for my presentation about GitLab + Kubernetes for Co
 **INFO** This isn't the best way to deploy application Docker images to K8s, this is more of an example how simple it can be.
 
 The presentation can be found here: [Kubernetes - WYNTK - GitLab CI + Kubernetes Presentation](https://edenmal.moe/post/2017/Kubernetes-WYNTK-GitLab-CI-Kubernetes-Presentation/).
-The blog post these files are specifically used in is here: [GitLab + Kubernetes: Perfect Match for Continuous Delivery with Container](https://edenmal.moe/post/2017/GitLab-Kubernetes-Perfect-Match-for-Continuous-Delivery-with-Container/).
+The blog post these files are specifically used in is here: [GitLab + Kubernetes: Using GitLab CI's Kubernetes Cluster feature](https://edenmal.moe/post/2019/GitLab-Kubernetes-Using-GitLab-CIs-Kubernetes-Cluster-feature/) and old post [GitLab + Kubernetes: Perfect Match for Continuous Delivery with Container](https://edenmal.moe/post/2017/GitLab-Kubernetes-Perfect-Match-for-Continuous-Delivery-with-Container/).
 
 An uptodate list of all my blog posts around GitLab and Kubernetes can be found on [this page](https://edenmal.moe/tags/gitlab/).
 This list is just an excerpt of some of my GitLab posts:
 
+* [GitLab + Kubernetes: Using GitLab CI's Kubernetes Cluster feature - UPDATED](https://edenmal.moe/post/2019/GitLab-Kubernetes-Using-GitLab-CIs-Kubernetes-Cluster-feature/)
 * [GitLab + Kubernetes: Using GitLab CI's Kubernetes Cluster feature](https://edenmal.moe/post/2018/GitLab-Kubernetes-Using-GitLab-CIs-Kubernetes-Cluster-feature/)
 * [GitLab + Kubernetes: Perfect Match for Continuous Delivery with Container](https://edenmal.moe/post/2017/GitLab-Kubernetes-Perfect-Match-for-Continuous-Delivery-with-Container/)
 * [Kubernetes - WYNTK - GitLab CI + Kubernetes Presentation](https://edenmal.moe/post/2017/Kubernetes-WYNTK-GitLab-CI-Kubernetes-Presentation/)
@@ -60,7 +61,12 @@ The following points are required for this repository to work correctly:
 
 ## Using this repository
 
+> **NOTE**
+>
+> Best is to follow the blog post [GitLab + Kubernetes: Using GitLab CI's Kubernetes Cluster feature](https://edenmal.moe/post/2019/GitLab-Kubernetes-Using-GitLab-CIs-Kubernetes-Cluster-feature/) as it contains more detailed instructions about using GitLab CI for Kubernetes.
+
 You have to replace the following addresses in all files:
+
 * `gitlab.zerbytes.net` with your GitLab address (e.g. `gitlab.example.com`).
 * `edenmal.net` (in the Ingress manifest) with your domain name.
     * You probably also want to change the subdomain name while you are at it.
@@ -71,8 +77,10 @@ If you are using [coreos/prometheus-operator](https://github.com/coreos/promethe
 in this file [`/gitlab-ci/monitoring/service-monitor.yaml`](/gitlab-ci/monitoring/service-monitor.yaml).
 You then also want to `kubectl` create/apply the file to your Kubernetes cluster during creation/apply process for the manifests in [`gitlab-ci/`](/gitlab-ci/).
 
-You also need to create a "Docker Login" Secret which contains your GitLab Registry access data (e.g. Username and Access token with registry access) named `regsecret` in the Namespace `presentation-gitlab-k8s`.
+You also need to create a "Docker Login" Secret which contains your GitLab Registry access data (e.g. Username and Access token with registry access) named whatever your want in the Namespace `presentation-gitlab-k8s`.
 A guide for that can be found here: [Kubernetes.io - Pull an Image from a Private Registry](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/).
+Instead of using the `imagePullSecrets`, we'll be using the `default` `ServiceAccount` in the  Namespace to automatically use the created Docker login `Secret`, see [Kubernetes - Configure Service Accounts for Pods - Add ImagePullSecrets to a service account](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/#add-imagepullsecrets-to-a-service-account).
+
 The Namespace manifest is in the [`gitlab-ci/`](/gitlab-ci/) directory.
 
 Then you can just import the repository into your GitLab instance and are ready to go.
@@ -93,8 +101,7 @@ As of GitLab `10.3` the Kubernetes Integration is marked as deprecated and with 
 ### Example Application
 
 * [`main.go`](/main.go) - The Golang example application code.
-* [`vendor/`](/vendor/) - Contains the Golang example application dependencies (`dep` is used).
-* [`Gopkg.lock`](`/Gopkg.lock`) and [`Gopkg.toml`](`/Gopkg.toml`) - Golang `dep` .
+* [`go.mod`](/go.mod) and [`go.sum`](/Gopkg.sum) - [Golang modules files](https://github.com/golang/go/wiki/Modules).
 
 ### Kubernetes Base GitLab CI Manifests
 
