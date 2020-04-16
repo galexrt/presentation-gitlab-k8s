@@ -73,6 +73,8 @@ deploy_review:
     name: review/$CI_BUILD_REF_NAME
     url: https://$CI_ENVIRONMENT_SLUG-presentation-gitlab-k8s.edenmal.net
     on_stop: stop_review
+    kubernetes:
+      namespace: presentation-gitlab-k8s
   script:
     - kubectl version
     - cd manifests/
@@ -107,6 +109,8 @@ stop_review:
   environment:
     name: review/$CI_BUILD_REF_NAME
     action: stop
+    kubernetes:
+      namespace: presentation-gitlab-k8s
   script:
     - kubectl version
     - kubectl delete ing -l ref=${CI_ENVIRONMENT_SLUG}
@@ -120,6 +124,8 @@ deploy_live:
   environment:
     name: live
     url: https://live-presentation-gitlab-k8s.edenmal.net
+    kubernetes:
+      namespace: presentation-gitlab-k8s
   only:
     - tags
   when: manual
