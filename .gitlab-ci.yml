@@ -1,5 +1,9 @@
+variables:
+  WEB_DOMAIN: "example.com"
+  KUBE_NAMESPACE: presentation-gitlab-k8s
+
 image:
-  name: golang:1.12.5-stretch
+  name: "golang:1.16.2-buster"
   entrypoint: ["/bin/sh", "-c"]
 
 stages:
@@ -18,7 +22,7 @@ test2:
   stage: test
   script:
     - sleep 3
-    - echo "We did it! Something else runs in parallel!"
+    - echo "This task runs in parallel!"
 
 compile:
   stage: build
@@ -39,104 +43,100 @@ compile:
 #    entrypoint: ["/bin/sh", "-c"]
 #  script:
 #    - echo "=> We already have artifact sotrage in GitLab! This is for demonstational purposes only."
-#    - mc config host add edenmalmoe https://s3.edenmal.net ${ACCESS_KEY} ${SECRET_KEY} S3v4
-#    - mc mb -p edenmalmoe/build-release-${CI_PROJECT_NAME}/
-#    - mc cp app edenmalmoe/build-release-${CI_PROJECT_NAME}/
+#    - mc config host add mys3host https://my-s3-host.example.com ${ACCESS_KEY} ${SECRET_KEY} S3v4
+#    - mc mb -p mys3host/build-release-${CI_PROJECT_NAME}/
+#    - mc cp app mys3host/build-release-${CI_PROJECT_NAME}/
 
 image_build:
   stage: release
   image:
-    name: docker:latest
+    name: "docker:latest"
     entrypoint: ["/bin/sh", "-c"]
   variables:
-    DOCKER_HOST: tcp://localhost:2375
+    DOCKER_HOST: "tcp://localhost:2375"
   services:
-    - docker:dind
+    - "docker:dind"
   script:
+    # Show docker daemon info (optional, good for debugging)
     - docker info
+    # Login to the Gitlab Container registry
     - docker login -u "${CI_REGISTRY_USER}" -p "${CI_REGISTRY_PASSWORD}" "${CI_REGISTRY}"
+    # Build the container image
     - docker build -t "${CI_REGISTRY_IMAGE}:latest" .
+    # Tag the container image from latest to the commit ref
     - docker tag "${CI_REGISTRY_IMAGE}:latest" "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}"
-    - test ! -z "${CI_COMMIT_TAG}" && docker push "${CI_REGISTRY_IMAGE}:latest"
+    # Push the container image
     - docker push "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}"
+    # If we are building a tag, push the `latest` container image tag too
+    - test ! -z "${CI_COMMIT_TAG}" && docker push "${CI_REGISTRY_IMAGE}:latest"
 
 deploy_review:
   image:
-    name: lachlanevenson/k8s-kubectl:latest
+    name: "alpine/helm:3.5.3"
     entrypoint: ["/bin/sh", "-c"]
   stage: review
+  # Only deploy the review for branches (this includes the `main` / `master` branch)
+  # but not tags
   only:
     - branches
   except:
     - tags
   environment:
-    name: review/$CI_BUILD_REF_NAME
-    url: https://$CI_ENVIRONMENT_SLUG-presentation-gitlab-k8s.edenmal.net
+    name: "review/$CI_BUILD_REF_NAME"
+    url: "https://$CI_ENVIRONMENT_SLUG-$KUBE_NAMESPACE.$WEB_DOMAIN"
     on_stop: stop_review
     kubernetes:
-      namespace: presentation-gitlab-k8s
+      namespace: "$KUBE_NAMESPACE"
   script:
-    - kubectl version
-    - cd manifests/
-    - sed -i "s~__CI_REGISTRY_IMAGE__~${CI_REGISTRY_IMAGE}~" deployment.yaml
-    - sed -i "s/__CI_ENVIRONMENT_SLUG__/${CI_ENVIRONMENT_SLUG}/" deployment.yaml ingress.yaml service.yaml
-    - sed -i "s/__VERSION__/${CI_COMMIT_REF_NAME}/" deployment.yaml ingress.yaml service.yaml
     - |
-      if kubectl apply -f deployment.yaml | grep -q unchanged; then
-          echo "=> Patching deployment to force image update."
-          kubectl patch -f deployment.yaml -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"ci-last-updated\":\"$(date +'%s')\"}}}}}"
-      else
-          echo "=> Deployment apply has changed the object, no need to force image update."
-      fi
-    - kubectl apply -f service.yaml || true
-    - kubectl apply -f ingress.yaml
-    - kubectl rollout status -f deployment.yaml
-    - kubectl get deploy,svc,ing,pod -l app="$(echo ${CI_PROJECT_NAME} | tr "." "-")",ref="${CI_ENVIRONMENT_SLUG}"
+      helm upgrade \
+        --install \
+        --values values.yaml \
+        ./charts/app \
+        "$CI_BUILD_REF_NAME"
 
 stop_review:
   image:
-    name: lachlanevenson/k8s-kubectl:latest
+    name: "alpine/helm:3.5.3"
     entrypoint: ["/bin/sh", "-c"]
   stage: review
   variables:
-    GIT_STRATEGY: none
+    GIT_STRATEGY: "none"
   when: manual
+  # Don't stop the "review" for master branch or tags,
+  # it is only for branches (so PRs (most of the time))
   only:
     - branches
   except:
     - master
+    - main
     - tags
   environment:
-    name: review/$CI_BUILD_REF_NAME
+    name: "review/$CI_BUILD_REF_NAME"
     action: stop
     kubernetes:
-      namespace: presentation-gitlab-k8s
+      namespace: "$KUBE_NAMESPACE"
   script:
     - kubectl version
-    - kubectl delete ing -l ref=${CI_ENVIRONMENT_SLUG}
-    - kubectl delete all -l ref=${CI_ENVIRONMENT_SLUG}
+    - helm uninstall "$CI_BUILD_REF_NAME"
 
 deploy_live:
   image:
-    name: lachlanevenson/k8s-kubectl:latest
+    name: alpine/helm:3.5.3
     entrypoint: ["/bin/sh", "-c"]
   stage: deploy
   environment:
     name: live
-    url: https://live-presentation-gitlab-k8s.edenmal.net
+    url: "https://live-$KUBE_NAMESPACE.$WEB_DOMAIN"
     kubernetes:
-      namespace: presentation-gitlab-k8s
+      namespace: "$KUBE_NAMESPACE"
   only:
     - tags
   when: manual
   script:
-    - kubectl version
-    - cd manifests/
-    - sed -i "s~__CI_REGISTRY_IMAGE__~${CI_REGISTRY_IMAGE}~" deployment.yaml
-    - sed -i "s/__CI_ENVIRONMENT_SLUG__/${CI_ENVIRONMENT_SLUG}/" deployment.yaml ingress.yaml service.yaml
-    - sed -i "s/__VERSION__/${CI_COMMIT_REF_NAME}/" deployment.yaml ingress.yaml service.yaml
-    - kubectl apply -f deployment.yaml
-    - kubectl apply -f service.yaml
-    - kubectl apply -f ingress.yaml
-    - kubectl rollout status -f deployment.yaml
-    - kubectl get deploy,svc,ing,pod -l app="$(echo ${CI_PROJECT_NAME} | tr "." "-")",ref="${CI_ENVIRONMENT_SLUG}"
+    - |
+      helm upgrade \
+        --install \
+        -f values.yaml \
+        ./charts/app \
+        live
