@@ -90,11 +90,11 @@ deploy_review:
   except:
     - tags
   environment:
-    name: "review/$CI_BUILD_REF_NAME"
-    url: "https://$CI_ENVIRONMENT_SLUG-$KUBE_NAMESPACE.$REVIEW_BASE_DOMAIN"
+    name: "review/${CI_BUILD_REF_NAME}"
+    url: "https://${CI_ENVIRONMENT_SLUG}-${KUBE_NAMESPACE}.${REVIEW_BASE_DOMAIN}"
     on_stop: stop_review
     kubernetes:
-      namespace: "$KUBE_NAMESPACE"
+      namespace: "${KUBE_NAMESPACE}"
   script:
     - |
       helm upgrade \
@@ -104,7 +104,8 @@ deploy_review:
         --set image.tag="${CI_COMMIT_REF_NAME}" \
         --set ingress.hosts[0].host="${CI_ENVIRONMENT_URL}" \
         --set ingress.tls[0].hosts[0]="${CI_ENVIRONMENT_URL}" \
-        --set certmanager.spec.dnsNames[0]="$CI_BUILD_REF_NAME" \
+        --set certmanager.spec.dnsNames[0]="${CI_BUILD_REF_NAME}" \
+        "${CI_BUILD_REF_NAME}" \
         ./charts/app
 
 stop_review:
@@ -127,10 +128,10 @@ stop_review:
     name: "review/$CI_BUILD_REF_NAME"
     action: stop
     kubernetes:
-      namespace: "$KUBE_NAMESPACE"
+      namespace: "${KUBE_NAMESPACE}"
   script:
     - kubectl version
-    - helm uninstall "$CI_BUILD_REF_NAME"
+    - helm uninstall "${CI_BUILD_REF_NAME}"
 
 deploy_live:
   image:
@@ -139,9 +140,9 @@ deploy_live:
   stage: deploy
   environment:
     name: live
-    url: "https://$LIVE_DOMAIN"
+    url: "https://${LIVE_DOMAIN}"
     kubernetes:
-      namespace: "$KUBE_NAMESPACE"
+      namespace: "${KUBE_NAMESPACE}"
   only:
     - tags
   when: manual
@@ -154,6 +155,6 @@ deploy_live:
         --set image.tag="${CI_COMMIT_REF_NAME}" \
         --set ingress.hosts[0].host="${CI_ENVIRONMENT_URL}" \
         --set ingress.tls[0].hosts[0]="${CI_ENVIRONMENT_URL}" \
-        --set certmanager.spec.dnsNames[0]="$CI_BUILD_REF_NAME" \
+        --set certmanager.spec.dnsNames[0]="${CI_BUILD_REF_NAME}" \
         live \
         ./charts/app
