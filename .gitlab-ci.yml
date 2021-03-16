@@ -50,17 +50,22 @@ compile:
 image_build:
   stage: release
   image:
-    name: "docker:latest"
+    name: "docker:19.03.13"
     entrypoint: ["/bin/sh", "-c"]
   variables:
-    DOCKER_HOST: "tcp://localhost:2375"
+    DOCKER_HOST: tcp://docker:2375
+    # See https://about.gitlab.com/blog/2019/07/31/docker-in-docker-with-docker-19-dot-03/
+    # Yeah, disabling TLS isn't the best way, but most Gitlab sadly haven't fixed their
+    # runners, so if you read this message, follow the post and fix the runners to use TLS
+    DOCKER_TLS_CERTDIR: ""
   services:
-    - "docker:dind"
-  script:
+    - name: "docker:19.03.13-dind"
+  before_script:
     # Show docker daemon info (optional, good for debugging)
     - docker info
     # Login to the Gitlab Container registry
     - docker login -u "${CI_REGISTRY_USER}" -p "${CI_REGISTRY_PASSWORD}" "${CI_REGISTRY}"
+  script:
     # Build the container image
     - docker build -t "${CI_REGISTRY_IMAGE}:latest" .
     # Tag the container image from latest to the commit ref
@@ -68,7 +73,7 @@ image_build:
     # Push the container image
     - docker push "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}"
     # If we are building a tag, push the `latest` container image tag too
-    - test ! -z "${CI_COMMIT_TAG}" && docker push "${CI_REGISTRY_IMAGE}:latest"
+    - if [ ! -z "${CI_COMMIT_TAG}" ]; then docker push "${CI_REGISTRY_IMAGE}:latest"; fi
 
 deploy_review:
   image:
@@ -94,8 +99,8 @@ deploy_review:
         --values values.yaml \
         --set image.repository=${CI_REGISTRY_IMAGE} \
         --set image.tag=${CI_COMMIT_REF_NAME} \
-        ./charts/app \
-        "$CI_BUILD_REF_NAME"
+        "$CI_BUILD_REF_NAME" \
+        ./charts/app
 
 stop_review:
   image:
@@ -142,5 +147,5 @@ deploy_live:
         --values values.yaml \
         --set image.repository=${CI_REGISTRY_IMAGE} \
         --set image.tag=${CI_COMMIT_REF_NAME} \
-        ./charts/app \
-        live
+        live \
+        ./charts/app
