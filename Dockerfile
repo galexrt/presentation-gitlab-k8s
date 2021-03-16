@@ -1,4 +1,4 @@
-FROM busybox:1.30.1-glibc
+FROM busybox:1.32.1-glibc
 
 COPY app /bin/app
 

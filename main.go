@@ -36,19 +36,33 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var ready = false
-var addr = flag.String("listen-address", ":8000", "The address to listen on for HTTP requests.")
+var (
+	ready = false
+	addr  = flag.String("listen-address", ":8000", "The address to listen on for HTTP requests.")
+)
 
 func main() {
 	flag.Parse()
-	log.Info("Starting presentation-gitlab-k8s application..")
+	log.Info("Starting web demo app application..")
+
+	// Register ("/metrics") endpoint for Prometheus metrics
+	http.Handle("/metrics", promhttp.Handler())
+
+	// Index ("/") handler
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		hostname, _ := os.Hostname()
-		w.Write([]byte("Hello Golang DevOpsCon Conference 2019 Berlin!\n"))
+		hostname, err := os.Hostname()
+		// When unable to get the hostname, just set it to `N/A`
+		// remember this is just a demo app ;-)
+		if err != nil {
+			hostname = "N/A"
+		}
+		w.Write([]byte("Hello!\n"))
 		w.Write([]byte("Hostname: " + hostname + "\n"))
 		w.Write([]byte("Version Info:\n"))
 		w.Write([]byte(version.Print("app") + "\n"))
 	})
+
+	// Demo "/health" handler
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		if ready {
 			w.WriteHeader(http.StatusOK)
@@ -58,12 +72,16 @@ func main() {
 			w.Write([]byte("500"))
 		}
 	})
-	http.Handle("/metrics", promhttp.Handler())
+
 	go func() {
-		<-time.After(5 * time.Second)
+		// Demo purpose 7 second delay till application "/health" endpoint
+		// will be ready
+		<-time.After(7 * time.Second)
 		ready = true
 		log.Info("Application is ready!")
 	}()
+
+	// Start the web server
 	log.Info("Listen on " + *addr)
 	log.Fatal(http.ListenAndServe(*addr, handlers.LoggingHandler(os.Stdout, http.DefaultServeMux)))
 }

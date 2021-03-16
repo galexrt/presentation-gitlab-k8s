@@ -1,0 +1,28 @@
+# For more information on the Prometheus Custom Resource and
+# prometheus-operator other CRs, checkout:
+# * https://github.com/prometheus-operator/prometheus-operator
+# * https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  labels:
+    prometheus: app
+  name: app
+spec:
+  image: quay.io/prometheus/prometheus:v2.23.0
+  nodeSelector:
+    kubernetes.io/os: linux
+  podMonitorNamespaceSelector: {}
+  podMonitorSelector: {}
+  probeNamespaceSelector: {}
+  probeSelector: {}
+  replicas: 1
+  retention: 48h
+  ruleNamespaceSelector: {}
+  ruleSelector: {}
+  securityContext:
+    fsGroup: 2000
+    runAsNonRoot: true
+    runAsUser: 1000
+  serviceMonitorNamespaceSelector: {}
+  serviceMonitorSelector: {}
