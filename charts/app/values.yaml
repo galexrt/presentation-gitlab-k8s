@@ -2,6 +2,9 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+ciVars:
+  domain: ""
+
 replicaCount: 1
 
 # Repository and tag is set by the GitLab CI
@@ -53,15 +56,15 @@ ingress:
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: app.example.com
+    - host: "{{ .Values.ciVars.domain }}"
       paths:
         - "/"
   tls:
-  # the secret used here is an unsigned wildcard cert for demo purposes
-  # use your own, cert-manager or comment this out
+    # The secret used here is an unsigned wildcard cert for demo purposes
+    # use your own, cert-manager or comment this out
     - secretName: app-tls-cert
       hosts:
-        - app.example.com
+      - "{{ .Values.ciVars.domain }}"
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
