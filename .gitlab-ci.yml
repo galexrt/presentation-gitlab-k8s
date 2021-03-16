@@ -130,7 +130,6 @@ stop_review:
     kubernetes:
       namespace: "$KUBE_NAMESPACE"
   script:
-    - kubectl version
     - helm uninstall "$CI_BUILD_REF_NAME"
 
 deploy_live:
