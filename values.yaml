@@ -1,0 +1,3 @@
+# You would put your different options for the app here,
+# though there are several ways to go about managing
+# `values.yaml` files for Helm.

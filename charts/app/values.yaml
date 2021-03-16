@@ -54,7 +54,7 @@ ingress:
       paths: []
   tls:
   # the secret used here is an unsigned wildcard cert for demo purposes
-  # use your own or comment this out
+  # use your own, cert-manager or comment this out
     - secretName: app-tls-cert
       hosts:
         - app.example.com
