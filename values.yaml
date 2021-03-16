@@ -1,3 +1,10 @@
 # You would put your different options for the app here,
 # though there are several ways to go about managing
 # `values.yaml` files for Helm.
+
+# You need to set the name to your GitLab registry secret or add a imagePullSecret to a ServiceAccount
+# For more information, see https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/#add-imagepullsecrets-to-a-service-account
+# and https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+# Check the `gitlab-ci/per-namespace/imagepullsecret.yaml` file.
+imagePullSecrets:
+  - name: gitlab-ci
