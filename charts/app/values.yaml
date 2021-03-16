@@ -4,8 +4,9 @@
 
 replicaCount: 1
 
+# Repository and tag is set by the GitLab CI
 image:
-  repository: nginx
+  repository: ""
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
@@ -28,17 +29,20 @@ podAnnotations: {}
 podSecurityContext: {}
   # fsGroup: 2000
 
-securityContext: {}
+securityContext:
   # capabilities:
   #   drop:
   #   - ALL
-  # readOnlyRootFilesystem: true
   # runAsNonRoot: true
   # runAsUser: 1000
+  # Most apps don't need access to the "disk" if your app needs to access /tmp,
+  # you should look into extending this demo helm chart to add these `volumes:` +
+  # `volumeMounts:` or variables to dynamically add volumes.
+  readOnlyRootFilesystem: true
 
 service:
   type: ClusterIP
-  port: 80
+  port: 8080
 
 ingress:
   enabled: true
@@ -46,14 +50,14 @@ ingress:
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: chart-example.local
+    - host: app.example.com
       paths: []
   tls:
   # the secret used here is an unsigned wildcard cert for demo purposes
   # use your own or comment this out
-    - secretName: tls-wildcard-demo
+    - secretName: app-tls-cert
       hosts:
-        - TODO
+        - app.example.com
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
@@ -82,3 +86,17 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+certmanager:
+  enabled: false
+  # apiVersion and spec depend on the cert-manager version in your Kubernetes cluster
+  # See https://cert-manager.io/docs/configuration/
+  apiVersion: "cert-manager.io/v1"
+  spec:
+    dnsNames:
+    - app.example.com
+    issuerRef:
+      group: cert-manager.io
+      kind: ClusterIssuer
+      name: letsencrypt-prod
+    secretName: app-tls-cert
