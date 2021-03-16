@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2018 Alexander Trost
+Copyright (c) 2018-2021 Alexander Trost
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,7 @@ import (
 	"flag"
 	"net/http"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/gorilla/handlers"
@@ -37,8 +38,9 @@ import (
 )
 
 var (
-	ready = false
-	addr  = flag.String("listen-address", ":8000", "The address to listen on for HTTP requests.")
+	ready      = false
+	readyMutex = sync.Mutex{}
+	addr       = flag.String("listen-address", ":8000", "The address to listen on for HTTP requests.")
 )
 
 func main() {
@@ -64,7 +66,10 @@ func main() {
 
 	// Demo "/health" handler
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
-		if ready {
+		readyMutex.Lock()
+		appReady := ready
+		readyMutex.Unlock()
+		if appReady {
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte("200"))
 		} else {
@@ -77,7 +82,9 @@ func main() {
 		// Demo purpose 7 second delay till application "/health" endpoint
 		// will be ready
 		<-time.After(7 * time.Second)
+		readyMutex.Lock()
 		ready = true
+		readyMutex.Unlock()
 		log.Info("Application is ready!")
 	}()
 
