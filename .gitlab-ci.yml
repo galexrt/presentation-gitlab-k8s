@@ -1,5 +1,8 @@
 variables:
-  WEB_DOMAIN: "example.com"
+  # Domain appended to the environment slug for reviews
+  REVIEW_BASE_DOMAIN: "example.com"
+  # The domain used for the live deployment
+  LIVE_DOMAIN: "example.com"
   KUBE_NAMESPACE: presentation-gitlab-k8s
 
 image:
@@ -88,7 +91,7 @@ deploy_review:
     - tags
   environment:
     name: "review/$CI_BUILD_REF_NAME"
-    url: "https://$CI_ENVIRONMENT_SLUG-$KUBE_NAMESPACE.$WEB_DOMAIN"
+    url: "https://$CI_ENVIRONMENT_SLUG-$KUBE_NAMESPACE.$REVIEW_BASE_DOMAIN"
     on_stop: stop_review
     kubernetes:
       namespace: "$KUBE_NAMESPACE"
@@ -97,9 +100,11 @@ deploy_review:
       helm upgrade \
         --install \
         --values values.yaml \
-        --set image.repository=${CI_REGISTRY_IMAGE} \
-        --set image.tag=${CI_COMMIT_REF_NAME} \
-        "$CI_BUILD_REF_NAME" \
+        --set image.repository="${CI_REGISTRY_IMAGE}" \
+        --set image.tag="${CI_COMMIT_REF_NAME}" \
+        --set ingress.hosts[0].host="${CI_ENVIRONMENT_URL}" \
+        --set ingress.tls[0].hosts[0]="${CI_ENVIRONMENT_URL}" \
+        --set certmanager.spec.dnsNames[0]="$CI_BUILD_REF_NAME" \
         ./charts/app
 
 stop_review:
@@ -134,7 +139,7 @@ deploy_live:
   stage: deploy
   environment:
     name: live
-    url: "https://live-$KUBE_NAMESPACE.$WEB_DOMAIN"
+    url: "https://$LIVE_DOMAIN"
     kubernetes:
       namespace: "$KUBE_NAMESPACE"
   only:
@@ -145,7 +150,10 @@ deploy_live:
       helm upgrade \
         --install \
         --values values.yaml \
-        --set image.repository=${CI_REGISTRY_IMAGE} \
-        --set image.tag=${CI_COMMIT_REF_NAME} \
+        --set image.repository="${CI_REGISTRY_IMAGE}" \
+        --set image.tag="${CI_COMMIT_REF_NAME}" \
+        --set ingress.hosts[0].host="${CI_ENVIRONMENT_URL}" \
+        --set ingress.tls[0].hosts[0]="${CI_ENVIRONMENT_URL}" \
+        --set certmanager.spec.dnsNames[0]="$CI_BUILD_REF_NAME" \
         live \
         ./charts/app
