@@ -40,6 +40,7 @@ helm.sh/chart: {{ include "presentation-gitlab-k8s.chart" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- include "presentation-gitlab-k8s.gitlabcilabels" . }}
 {{- end }}
 
 {{/*
@@ -58,5 +59,19 @@ Create the name of the service account to use
 {{- default (include "presentation-gitlab-k8s.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
+{{- end }}
+{{- end }}
+
+{{/*
+GitLab CI labels
+*/}}
+{{- define "presentation-gitlab-k8s.gitlabcilabels" -}}
+{{- if .Values.ciVars }}
+{{- if .Values.ciVars.CI_ENVIRONMENT_SLUG }}
+app.gitlab.com/env: {{ tpl .Values.ciVars.CI_ENVIRONMENT_SLUG . | quote }}
+{{- end }}
+{{- if .Values.ciVars.CI_PROJECT_PATH_SLUG }}
+app.gitlab.com/app: {{ tpl .Values.ciVars.CI_PROJECT_PATH_SLUG . | quote }}
+{{- end }}
 {{- end }}
 {{- end }}
