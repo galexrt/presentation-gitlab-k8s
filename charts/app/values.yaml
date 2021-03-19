@@ -66,9 +66,11 @@ ingress:
   tls:
     # The secret used here is an unsigned wildcard cert for demo purposes
     # use your own, cert-manager or comment this out
+    # `secretName` is templated using Helm (check the `values.yaml` in the repo root)
+    #- secretName: "{{ .Values.ciVars.CI_ENVIRONMENT_SLUG }}"
     - secretName: app-tls-cert
       hosts:
-      - "{{ .Values.ciVars.domain }}"
+        - "{{ .Values.ciVars.domain }}"
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local

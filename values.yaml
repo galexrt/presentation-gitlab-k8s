@@ -13,3 +13,7 @@ imagePullSecrets:
 #ingress:
 #  annotations:
 #    cert-manager.io/cluster-issuer: letsencrypt-prod
+#  tls:
+#    - secretName: "{{ .Values.ciVars.CI_ENVIRONMENT_SLUG }}"
+#      hosts:
+#        - "{{ .Values.ciVars.domain }}"

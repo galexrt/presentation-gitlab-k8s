@@ -23,7 +23,7 @@ spec:
         {{- range .hosts }}
         - {{ tpl . $ | quote }}
         {{- end }}
-      secretName: {{ .secretName }}
+      secretName: {{ tpl .secretName $ | quote }}
     {{- end }}
   {{- end }}
   rules:
