@@ -55,6 +55,10 @@ ingress:
   annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
+    # Cert-Manager - Use only of the two annotations (make sure to
+    # remove the `{}` when commenting in lines):
+    # cert-manager.io/cluster-issuer: nameOfClusterIssuer
+    # cert-manager.io/issuer: nameOfNamespaceLocalIssuer
   hosts:
     - host: "{{ .Values.ciVars.domain }}"
       paths:

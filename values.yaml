@@ -8,3 +8,8 @@
 # Check the `gitlab-ci/per-namespace/imagepullsecret.yaml` file.
 imagePullSecrets:
   - name: gitlab-ci
+
+# Example to use Certmanager annotation on the Ingress object for certificate creation:
+#ingress:
+#  annotations:
+#    cert-manager.io/cluster-issuer: letsencrypt-prod
