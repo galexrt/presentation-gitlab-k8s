@@ -1,0 +1,119 @@
+# Default values for presentation-gitlab-k8s.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+ciVars:
+  domain: ""
+  # app.gitlab.com/env
+  CI_ENVIRONMENT_SLUG : ""
+  # app.gitlab.com/app
+  CI_PROJECT_PATH_SLUG: ""
+
+replicaCount: 1
+
+# Repository and tag is set by the GitLab CI
+image:
+  repository: ""
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+# You need to set the name to your GitLab registry secret or add a imagePullSecret to a ServiceAccount
+# For more information, see https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/#add-imagepullsecrets-to-a-service-account
+# and https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext:
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # runAsNonRoot: true
+  # runAsUser: 1000
+  # Most apps don't need access to the "disk" if your app needs to access /tmp,
+  # you should look into extending this demo helm chart to add these `volumes:` +
+  # `volumeMounts:` or variables to dynamically add volumes.
+  readOnlyRootFilesystem: true
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: true
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    # Cert-Manager - Use only of the two annotations (make sure to
+    # remove the `{}` when commenting in lines):
+    # cert-manager.io/cluster-issuer: nameOfClusterIssuer
+    # cert-manager.io/issuer: nameOfNamespaceLocalIssuer
+  hosts:
+    - host: "{{ .Values.ciVars.domain }}"
+      paths:
+        - "/"
+  tls:
+    # The secret used here is an unsigned wildcard cert for demo purposes
+    # use your own, cert-manager or comment this out
+    # `secretName` is templated using Helm (check the `values.yaml` in the repo root)
+    #- secretName: "{{ .Values.ciVars.CI_ENVIRONMENT_SLUG }}"
+    - secretName: app-tls-cert
+      hosts:
+        - "{{ .Values.ciVars.domain }}"
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+certmanager:
+  enabled: false
+  # apiVersion and spec depend on the cert-manager version in your Kubernetes cluster
+  # See https://cert-manager.io/docs/configuration/
+  apiVersion: "cert-manager.io/v1"
+  spec:
+    dnsNames:
+    - app.example.com
+    issuerRef:
+      group: cert-manager.io
+      kind: ClusterIssuer
+      name: letsencrypt-prod
+    secretName: app-tls-cert

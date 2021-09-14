@@ -1,0 +1,10 @@
+{{- if .Values.certmanager.enabled }}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  labels:
+    {{- include "presentation-gitlab-k8s.labels" . | nindent 4 }}
+  name: test-code-nrw
+spec:
+  {{- .Values.certmanager.spec | nindent 4 }}
+{{- end }}
