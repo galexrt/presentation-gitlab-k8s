@@ -6,7 +6,7 @@ variables:
   KUBE_NAMESPACE: presentation-gitlab-k8s
 
 image:
-  name: "golang:1.16.2-buster"
+  name: "docker.io/library/golang:1.24-trixie"
   entrypoint: ["/bin/sh", "-c"]
 
 stages:
@@ -53,7 +53,7 @@ compile:
 image_build:
   stage: release
   image:
-    name: "docker:19.03.13"
+    name: "docker.io/library/docker:29.2.1"
     entrypoint: ["/bin/sh", "-c"]
   variables:
     DOCKER_HOST: tcp://docker:2375
@@ -62,7 +62,7 @@ image_build:
     # runners, so if you read this message, follow the post and fix the runners to use TLS
     DOCKER_TLS_CERTDIR: ""
   services:
-    - name: "docker:19.03.13-dind"
+    - name: "docker:29.2.1-dind"
   before_script:
     # Show docker daemon info (optional, good for debugging)
     - docker info
@@ -80,7 +80,7 @@ image_build:
 
 deploy_review:
   image:
-    name: "alpine/helm:3.5.3"
+    name: "alpine/helm:3.20.0"
     entrypoint: ["/bin/sh", "-c"]
   stage: review
   # Only deploy the review for branches (this includes the `main` / `master` branch)
@@ -112,7 +112,7 @@ deploy_review:
 
 stop_review:
   image:
-    name: "alpine/helm:3.5.3"
+    name: "alpine/helm:3.20.0"
     entrypoint: ["/bin/sh", "-c"]
   stage: review
   variables:
@@ -136,7 +136,7 @@ stop_review:
 
 deploy_live:
   image:
-    name: alpine/helm:3.5.3
+    name: "alpine/helm:3.20.0"
     entrypoint: ["/bin/sh", "-c"]
   stage: deploy
   environment:
