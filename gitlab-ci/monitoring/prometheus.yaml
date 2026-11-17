@@ -9,7 +9,7 @@ metadata:
     prometheus: app
   name: app
 spec:
-  image: quay.io/prometheus/prometheus:v2.23.0
+  image: quay.io/prometheus/prometheus:v3.16.0
   nodeSelector:
     kubernetes.io/os: linux
   podMonitorNamespaceSelector: {}
